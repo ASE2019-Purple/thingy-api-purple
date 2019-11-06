@@ -1,0 +1,75 @@
+paths:
+  /public:
+    get:
+      summary: Public Content
+      operationId: public
+      responses:
+        '200':
+          description: Success
+  /protected:
+    get:
+      summary: Protected content
+      operationId: protected
+      responses:
+        '200':
+          schema:
+            type: json
+          description: Success
+        '401':
+          description: Authorization required
+        '403':
+          description: Insufficient scopes
+  /profile:
+    get:
+      summary: Returns the name and email auf the authenticated user
+      operationId: get_profile
+      responses:
+        '200':
+          schema:
+            $ref: '#/definitions/Profile'
+          description: Profile
+        '401':
+          description: Authorization required
+        '403':
+          description: Insufficient scopes
+      parameters:
+        - in: header
+          format: Bearer
+          description: json web token
+          type: string
+          name: Authorization
+
+definitions:
+  Profile:
+    properties:
+      name:
+        type: string
+        description: Name
+      email:
+        type: string
+        description: Email
+    type: object
+    required:
+      - email
+
+basePath: /
+consumes:
+  - application/json
+produces:
+  - application/json
+info:
+  version: '1.0'
+  title: Thingy API Purple
+  description: ASE2019
+responses:
+  ParseError:
+    description: When a mask can't be parsed
+  MaskError:
+    description: When any error occurs on mask
+swagger: '2.0'
+tags:
+  - description: Default namespace
+    name: default
+  - description: Thingy
+    name: thingy
+
