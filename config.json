@@ -1,0 +1,133 @@
+{
+  "wifi": {
+    "ssid": "lazote",
+    "password":"aleksandarlazic"
+  },
+  "mqtt": {
+    "server": {
+      "host": "mqtt.thing.zone",
+      "port": 1897,
+      "username": "purple",
+      "password": "bfe6d5288f"
+    },
+    "publish": {
+      "retain": false
+    }
+  },
+  "ble": {
+    "whitelist": [
+      "fe:84:88:ca:47:ca"
+    ],
+    "services": {
+      "whitelist": [
+        "ef680200-9b35-4933-9b10-52ffa9740042",
+        "ef680300-9b35-4933-9b10-52ffa9740042",
+        "ef680500-9b35-4933-9b10-52ffa9740042",
+        "0000ffe0-0000-1000-8000-00805f9b34fb"
+      ],
+      "definitions": {
+        "ef680100-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Configuration Service"
+        },
+        "ef680200-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Environment Service"
+        },
+        "ef680300-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy User Interface Service"
+        },
+        "ef680400-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Motion Service"
+        },
+        "ef680500-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Sound Service"
+        }
+      }
+    },
+    "characteristics": {
+      "whitelist": [
+        "ef680101-9b35-4933-9b10-52ffa9740042",
+        "ef680201-9b35-4933-9b10-52ffa9740042",
+        "ef680202-9b35-4933-9b10-52ffa9740042",
+        "ef680203-9b35-4933-9b10-52ffa9740042",
+        "ef680204-9b35-4933-9b10-52ffa9740042",
+        "ef680205-9b35-4933-9b10-52ffa9740042",
+        "ef680301-9b35-4933-9b10-52ffa9740042",
+        "ef680302-9b35-4933-9b10-52ffa9740042",
+        "ef680501-9b35-4933-9b10-52ffa9740042",
+        "ef680502-9b35-4933-9b10-52ffa9740042"
+      ],
+      "definitions": {
+        "ef680101-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Name Characteristic",
+          "types": [
+            "utf8s"
+          ]
+        },
+        "ef680201-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Temperature Characteristic",
+          "types": [
+            "sint8",
+            "uint8"
+          ]
+        },
+        "ef680202-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Pressure Characteristic",
+          "types": [
+            "sint32",
+            "uint8"
+          ]
+        },
+        "ef680203-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Humidity Characteristic",
+          "types": [
+            "uint8"
+          ]
+        },
+        "ef680204-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Air Quality Characteristic",
+          "types": [
+            "uint16",
+            "uint16"
+          ]
+        },
+        "ef680205-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Light Intensity Characteristic",
+          "types": [
+            "uint16",
+            "uint16",
+            "uint16",
+            "uint16"
+          ]
+        },
+        "ef680301-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy LED Characteristic",
+          "types": [
+            "uint8",
+            "uint8",
+            "uint8",
+            "uint8"
+          ]
+        },
+        "ef680302-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Button Characteristic",
+          "types": [
+            "boolean"
+          ]
+        },
+        "ef680501-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Sound Configuration Characteristic",
+          "types": [
+            "uint8",
+            "uint8"
+          ]
+        },
+        "ef680502-9b35-4933-9b10-52ffa9740042": {
+          "name": "Thingy Speaker Data Characteristic",
+          "types": [
+            "uint8"
+          ]
+        }
+      }
+    }
+  }
+}
