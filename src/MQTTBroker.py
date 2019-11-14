@@ -6,7 +6,6 @@ from hbmqtt.mqtt.constants import QOS_1, QOS_2 #QOS_1 means from publishing clie
 
 uri = 'mqtt://purple:bfe6d5288f@mqtt.thing.zone:1897'
 
-
 client = None
 
 thingys = {
@@ -19,8 +18,8 @@ topics = {
     "Thingy1" : "fe:84:88:ca:47:ca/",
     "EnvironmentAll" : "Thingy Environment Service/#",
     "EnvironmentTemperature" : "Thingy Environment Service/Thingy Temperature Characteristic"
+    #TODO: Add all the other services (can be found in config.json)
 }
-
 
 async def initMQTT():
     global client
