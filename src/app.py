@@ -11,7 +11,6 @@ import os
 
 env = os.getenv("ENVIRONMENT", "DEBUG")
 IP = os.getenv("IP", "0.0.0.0")
-# IP = getenv("IP", "localhost")
 PORT = os.getenv("PORT", "8000")
 
 logging.basicConfig(level=logging.INFO)
@@ -125,6 +124,8 @@ async def init(loop):
     cors.add(app.router.add_get("/public", public_handler))
     cors.add(app.router.add_get("/protected", protected_handler))
     cors.add(app.router.add_get("/profile", profile_handler))
+
+    # Routes
 
     # Config
     setup_swagger(app, swagger_url="/api/v1/doc", swagger_from_file="swagger.yaml")
