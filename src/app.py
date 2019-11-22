@@ -16,17 +16,14 @@ PORT = os.getenv("PORT", "8000")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 if env == "DEBUG":
     logging.basicConfig(level=logging.DEBUG)
-
 
 # Auth0 Configuration
 secret = "JjQVkqJJXmxpH1UvmvElStfLi1NJv55h"
 audience = "thingy_api_purple"
 issuer = "https://thingy-api-purple.eu.auth0.com/"
 algorithms = "RS256"
-
 
 # Use the following to retrieve from auth0 certificate
 # openssl x509 -pubkey -noout -in cert.pem  > pubkey.pem
@@ -111,8 +108,8 @@ async def init(loop):
 
         userinfo = {}
         async with session.get(
-            issuer + "userinfo",
-            headers={"Authorization": request.headers["Authorization"]},
+                issuer + "userinfo",
+                headers={"Authorization": request.headers["Authorization"]},
         ) as r:
             userinfo = await r.json()
 

@@ -2,25 +2,27 @@ import logging
 import asyncio
 
 from hbmqtt.client import MQTTClient, ClientException
-from hbmqtt.mqtt.constants import QOS_1, QOS_2 #QOS_1 means from publishing client to broker, QOS_2 from broker to subscribing client
+from hbmqtt.mqtt.constants import QOS_1, \
+    QOS_2  # QOS_1 means from publishing client to broker, QOS_2 from broker to subscribing client
 
 uri = 'mqtt://purple:bfe6d5288f@mqtt.thing.zone:1897'
 
 client = None
 
 thingys = {
-    "Thingy1" : "fe:84:88:ca:47:ca/",
-    "Thingy2" : "macaddress2/",
-    "Thingy3" : "macaddress3/"
+    "Thingy1": "fe:84:88:ca:47:ca/",
+    "Thingy2": "macaddress2/",
+    "Thingy3": "macaddress3/"
 }
 
 topics = {
-    "Thingy1" : "fe:84:88:ca:47:ca/",
-    "EnvironmentAll" : "Thingy Environment Service/#",
-    "EnvironmentTemperature" : "Thingy Environment Service/Thingy Temperature Characteristic"
+    "Thingy1": "fe:84:88:ca:47:ca/",
+    "EnvironmentAll": "Thingy Environment Service/#",
+    "EnvironmentTemperature": "Thingy Environment Service/Thingy Temperature Characteristic"
 
-    #TODO: Add all the other services (can be found in config.json)
+    # TODO: Add all the other services (can be found in config.json)
 }
+
 
 async def initMQTT():
     global client
@@ -28,13 +30,12 @@ async def initMQTT():
     await client.connect(uri)
 
 
-
 @asyncio.coroutine
 def subscribeToTopic(thingy, topic):
     values = []
     yield from client.subscribe([
-            (thingy+topic, QOS_2)
-         ])
+        (thingy + topic, QOS_2)
+    ])
     try:
         for i in range(1, 10):
             message = yield from client.deliver_message()
@@ -46,9 +47,11 @@ def subscribeToTopic(thingy, topic):
 
     return values
 
+
 async def main():
     await initMQTT()
     await subscribeToTopic(thingys['Thingy1'], topics["EnvironmentAll"])
+
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())
