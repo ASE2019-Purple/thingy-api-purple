@@ -1,0 +1,15 @@
+{
+  "name": "node-red-Flow",
+  "version": "1.0",
+  "description": "NodeRED Project for thingy-purple",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ASE2019-Purple/thingy-api-purple.git"
+  },
+  "author": "Narek",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "node-red-dashboard": "^2.18.0"
+  }
+}

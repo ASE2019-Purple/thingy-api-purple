@@ -15,3 +15,14 @@ which allows login with a **Github** or **Google** account.
 
 The endpoints are protected using [aiohttp-jwt](https://github.com/hzlmn/aiohttp-jwt/ "aiohttp-jwt") as
 middleware.
+
+
+### Start NodeRed
+```
+dokcer-compose up -d
+```
+
+
+
+ 
+
