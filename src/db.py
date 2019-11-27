@@ -7,7 +7,7 @@ client = None
 
 async def init_db():
     global client
-    client = InfluxDBClient(os.getenv('INFLUXDB_HOST'), os.getenv('INFLUXDB_PORT'), os.getenv('INFLUXDB_DB'), os.getenv('INFLUXDB_USER'),os.getenv('INFLUXDB_PASS'))
+    client = InfluxDBClient("localhost", 8086, "purple" , "purple","purple")
     create_database()
 
 def create_database():
