@@ -16,7 +16,6 @@ thingys = {
 }
 
 topics = {
-    "Thingy1": "fe:84:88:ca:47:ca/",
     "EnvironmentAll": "Thingy Environment Service/#",
     "EnvironmentTemperature": "Thingy Environment Service/Thingy Temperature Characteristic"
 
@@ -36,11 +35,10 @@ def subscribe(thingy, topic):
         (thingy + topic, QOS_2)
     ])
     try:
-        for i in range(1, 1000):
+        for i in range(1, 10):
             message = yield from client.deliver_message()
             packet = message.publish_packet
             values.append(packet.variable_header.topic_name + "://:" + packet.payload.data.decode())
-        print(values)
     except ClientException as ce:
         logger.error("Client exception: %s" % ce)
 

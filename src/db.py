@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 from influxdb import InfluxDBClient
 
@@ -6,7 +7,7 @@ client = None
 
 async def init_db():
     global client
-    client = InfluxDBClient('localhost', 8086, 'purple', 'purple', 'purple')
+    client = InfluxDBClient(os.getenv('INFLUXDB_HOST'), os.getenv('INFLUXDB_PORT'), os.getenv('INFLUXDB_DB'), os.getenv('INFLUXDB_USER'),os.getenv('INFLUXDB_PASS'))
     create_database()
 
 def create_database():
@@ -22,7 +23,6 @@ def insert_bulk(values):
     points = []
     for v in values:
         points.append(insert_environment_data(v))
-    print(points)
     client.write_points(points)
 
 def insert_environment_light(topic_value_array, topic_array):

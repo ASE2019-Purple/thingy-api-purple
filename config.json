@@ -16,7 +16,8 @@
   },
   "ble": {
     "whitelist": [
-      "fe:84:88:ca:47:ca"
+      "fe:84:88:ca:47:ca",
+      "e6:97:3d:de:ca:a3"
     ],
     "services": {
       "whitelist": [

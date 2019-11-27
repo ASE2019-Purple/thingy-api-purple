@@ -10,7 +10,7 @@ def get_temperature(request):
 def get_humidity(request):
     humidities = list(db.get_all_humidity())
     return web.json_response(humidities)
-
+    
 def get_air_quality(request):
     list_airquality = list(db.get_all_air_quality())
     return web.json_response(list_airquality)
@@ -18,8 +18,6 @@ def get_air_quality(request):
 def get_pressure(request):
     pressures = list(db.get_all_pressure())
     return web.json_response(pressures)
-
-
 
 async def app_factory(args=()):
     #init the db
