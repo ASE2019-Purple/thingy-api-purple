@@ -24,20 +24,20 @@ topics = {
 }
 
 
-async def initMQTT():
+async def init_mqtt():
     global client
     client = MQTTClient()
     await client.connect(uri)
 
 
 @asyncio.coroutine
-def subscribeToTopic(thingy, topic):
+def subscribe(thingy, topic):
     values = []
     yield from client.subscribe([
         (thingy + topic, QOS_2)
     ])
     try:
-        for i in range(1, 10):
+        for i in range(1, 1000):
             message = yield from client.deliver_message()
             packet = message.publish_packet
             values.append(packet.variable_header.topic_name + "://:" + packet.payload.data.decode())
@@ -46,12 +46,3 @@ def subscribeToTopic(thingy, topic):
         logger.error("Client exception: %s" % ce)
 
     return values
-
-
-async def main():
-    await initMQTT()
-    await subscribeToTopic(thingys['Thingy1'], topics["EnvironmentAll"])
-
-
-if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
