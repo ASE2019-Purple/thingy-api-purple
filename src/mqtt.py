@@ -29,7 +29,6 @@ async def init_mqtt():
     client = MQTTClient()
     await client.connect(uri)
 
-
 @asyncio.coroutine
 def subscribe(thingy, topic):
     values = []
