@@ -11,7 +11,7 @@ client = None
 
 thingys = {
     "Thingy1": "fe:84:88:ca:47:ca/",
-    "Thingy2": "macaddress2/",
+    "Thingy2": "e6:97:3d:de:ca:a3/",
     "Thingy3": "macaddress3/"
 }
 
@@ -28,6 +28,7 @@ async def init_mqtt():
     client = MQTTClient()
     await client.connect(uri)
 
+
 @asyncio.coroutine
 def subscribe(thingy, topic):
     values = []
@@ -40,6 +41,6 @@ def subscribe(thingy, topic):
             packet = message.publish_packet
             values.append(packet.variable_header.topic_name + "://:" + packet.payload.data.decode())
     except ClientException as ce:
-        logger.error("Client exception: %s" % ce)
+        logging.error("Client exception: %s" % ce)
 
     return values
