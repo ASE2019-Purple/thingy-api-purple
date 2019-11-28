@@ -1,12 +1,13 @@
 import asyncio
 
-from db import init_db, insert_bulk
-from mqtt import init_mqtt, subscribe, thingys, topics
+import db 
+import mqtt 
 
 async def main():
-    await init_db()
-    await init_mqtt()
-    values = await subscribe(thingys['Thingy1'], topics['EnvironmentAll'])
+    await db.init_db()
+    await mqtt.init_mqtt()
+    values = await mqtt.subscribe(mqtt.thingys['Thingy1'], mqtt.topics['EnvironmentAll'], 10)
+    # mqtt.subscribe_non_stop(mqtt.thingys['Thingy1'], mqtt.topics['EnvironmentAll']) 
     insert_bulk(values)
 
 if __name__ == "__main__":

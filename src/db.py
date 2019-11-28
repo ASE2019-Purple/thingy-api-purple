@@ -20,10 +20,8 @@ def drop_database():
     client.drop_database('purple')
 
 def insert_bulk(values):
-    points = []
     for v in values:
-        points.append(insert_environment_data(v))
-    client.write_points(points)
+        insert_environment_data(v)
 
 def insert_environment_light(topic_value_array, topic_array):
     value1 = topic_value_array[1].split(',')[0]
@@ -31,8 +29,8 @@ def insert_environment_light(topic_value_array, topic_array):
     value3 = topic_value_array[1].split(',')[2]
     value4 = topic_value_array[1].split(',')[3]
 
-    point = {
-        "measurement": topic_array[2].replace(' ', '-'),
+    point = [{
+        "measurement": "Environment-Light",
         "tags": {
             "thingy": topic_array[0].replace(' ', '-'),
             "service": topic_array[1].replace(' ', '-'),
@@ -44,12 +42,12 @@ def insert_environment_light(topic_value_array, topic_array):
             "value3": float(value3),
             "value4": float(value4)
         }
-    }
+    }]
 
-    return point
+    client.write_points(point)
 
 def insert_environment_others(topic_value_array, topic_array, value):
-    point = {
+    point = [{
         "measurement": topic_array[2].replace(' ', '-'),
         "tags": {
             "thingy": topic_array[0].replace(' ', '-'),
@@ -59,9 +57,9 @@ def insert_environment_others(topic_value_array, topic_array, value):
         "fields": {
             "value": float(value.replace(',', '.'))
         }
-    }
+    }]
 
-    return point
+    client.write_points(point)
 
 # DATA = THINGY/SERVICE/CHARACTERISTIC://:VALUE
 def insert_environment_data(data):
