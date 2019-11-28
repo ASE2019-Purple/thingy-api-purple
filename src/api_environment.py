@@ -1,19 +1,24 @@
 import db
-
+import logging
+from aiohttp.web import run_app
 from aiohttp import web
 import aiohttp_cors
+
 
 def get_temperature(request):
     temperatures = list(db.get_all_temperature())
     return web.json_response(temperatures)
 
+
 def get_humidity(request):
     humidities = list(db.get_all_humidity())
     return web.json_response(humidities)
-    
+
+
 def get_air_quality(request):
     list_airquality = list(db.get_all_air_quality())
     return web.json_response(list_airquality)
+
 
 def get_pressure(request):
     pressures = list(db.get_all_pressure())
@@ -61,30 +66,34 @@ def get_thing_event(request):
     return web.json_response(event)
 
 async def app_factory(args=()):
-    #init the db
+    # init the db
     await db.init_db()
-    #Create web app
+    # Create web app
     app = web.Application()
 
     # Configure default CORS settings.
     cors = aiohttp_cors.setup(app,
-    defaults={"*": aiohttp_cors.ResourceOptions(allow_credentials=True,expose_headers="*",allow_headers="*")})
+                              defaults={"*": aiohttp_cors.ResourceOptions(allow_credentials=True, expose_headers="*",
+                                                                          allow_headers="*")})
 
-    #Temperature routes
+    # Temperature routes
     temperature_route = cors.add(app.router.add_resource('/temperature'))
     cors.add(temperature_route.add_route("GET", get_temperature))
 
-    #Humidity routes
+    # Humidity routes
     humidity_route = cors.add(app.router.add_resource('/humidity'))
-    cors.add(humidity_route.add_route("GET",get_humidity))
+    cors.add(humidity_route.add_route("GET", get_humidity))
 
-    #Pressure routes
+    # Pressure routes
     pressure_route = cors.add(app.router.add_resource('/pressure'))
-    cors.add(pressure_route.add_route("GET",get_air_quality))
+    cors.add(pressure_route.add_route("GET", get_air_quality))
 
-    #Air quality routes
+    # Air quality routes
     air_quality_route = cors.add(app.router.add_resource('/air-quality'))
-    cors.add(air_quality_route.add_route("GET",get_air_quality))
+    cors.add(air_quality_route.add_route("GET", get_air_quality))
+
+    return app
+
 
     # Resources
     things_resource = cors.add(app.router.add_resource("/things/", name='things'))
@@ -102,3 +111,5 @@ async def app_factory(args=()):
     cors.add(thing_event_resource.add_route("GET", get_thing_event))
     
     return app
+if __name__ == '__main__':
+    run_app(app_factory(), host='0.0.0.0', port=8080)

@@ -9,3 +9,4 @@ COPY subflow.json /data/flows.json
 
 WORKDIR /usr/src/node-red
 VOLUME /data
+

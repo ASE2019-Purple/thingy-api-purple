@@ -6,7 +6,7 @@ from mqtt import init_mqtt, subscribe, thingys, topics
 async def main():
     await init_db()
     await init_mqtt()
-    values = await subscribe(thingys['Thingy1'], topics['EnvironmentAll'])
+    values = await subscribe(thingys['Thingy2'], topics['EnvironmentAll'])
     insert_bulk(values)
 
 if __name__ == "__main__":

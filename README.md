@@ -17,7 +17,7 @@ The endpoints are protected using [aiohttp-jwt](https://github.com/hzlmn/aiohttp
 middleware.
 
 
-### Start NodeRed
+### Start NodeRed and our service
 ```
 dokcer-compose up -d
 ```

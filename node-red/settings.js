@@ -124,8 +124,8 @@ module.exports = {
     adminAuth: {
         type: "credentials",
         users: [{
-            username: "NodeRedAdmin",
-            password: "$2a$08$p.bAyg7OXogHjrWoMCc9suBuZvBbmcY25C02jAumugCbRRzRpvw8i",
+            username: process.env.ADMIN_NAME,
+            password: bcrypt.hashSync(process.env.ADMIN_NAME),
             permissions: "*"
         }]
     },

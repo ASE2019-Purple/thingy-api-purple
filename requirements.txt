@@ -13,3 +13,4 @@ cryptography==2.8
 request==2019.4.13
 hbmqtt
 influxdb
+python-dotenv
