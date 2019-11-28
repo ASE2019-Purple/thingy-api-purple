@@ -63,4 +63,4 @@ def subscribe_non_stop(thingy, topic):
             insert_environment_data(data)
 
     except ClientException as ce:
-        logger.error("Client exception: %s" % ce)
+        logging.error("Client exception: %s" % ce)
