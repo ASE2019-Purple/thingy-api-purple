@@ -12,8 +12,8 @@ client = None
 
 thingys = {
     "Thingy1": "fe:84:88:ca:47:ca/",
-    "Thingy2": "macaddress2/",
-    "Thingy3": "macaddress3/"
+    "Thingy2": "e6:97:3d:de:ca:a3/",
+    "Thingy3": "fe:0f:3c:ed:a3:d6/"
 }
 
 topics = {
@@ -29,6 +29,7 @@ async def init_mqtt():
     client = MQTTClient()
     await client.connect(uri)
 
+
 @asyncio.coroutine
 def subscribe(thingy, topic, range):
     values = []
@@ -41,7 +42,7 @@ def subscribe(thingy, topic, range):
             packet = message.publish_packet
             values.append(packet.variable_header.topic_name + "://:" + packet.payload.data.decode())
     except ClientException as ce:
-        logger.error("Client exception: %s" % ce)
+        logging.error("Client exception: %s" % ce)
 
     return values
 
@@ -52,7 +53,6 @@ def subscribe_non_stop(thingy, topic):
         (thingy + topic, QOS_2)
     ])
     try:
-        cpt = 0
         while True:
             message = yield from client.deliver_message()
             packet = message.publish_packet
@@ -62,4 +62,3 @@ def subscribe_non_stop(thingy, topic):
 
     except ClientException as ce:
         logger.error("Client exception: %s" % ce)
-
