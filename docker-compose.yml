@@ -22,24 +22,21 @@ services:
     image: influxdb:latest
     ports:
       - "8086:8086"
-#      - "8083:8083"
-#      - "2003:2003"
-
     env_file:
       - .env
     volumes:
       - influxdb:/var/lib/influxdb
-  app:
-    build: .
-    restart: always
-    env_file:
-      - .env
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    links:
-      - db
+  # app:
+  #   build: .
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - db
+  #   links:
+  #     - db
 
 volumes:
   node-red:

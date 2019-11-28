@@ -15,10 +15,9 @@ INFLUXDB_USER = os.getenv("INFLUXDB_USER")
 INFLUXDB_USER_PASSWORD = os.getenv("INFLUXDB_USER_PASSWORD")
 INFLUXDB_DB = os.getenv("INFLUXDB_DB")
 
-
 async def init_db():
     global client
-    client = InfluxDBClient('db', INFLUXDB_PORT, INFLUXDB_USER, INFLUXDB_USER_PASSWORD, INFLUXDB_DB)
+    client = InfluxDBClient('35.241.155.14',8086,'purple','purple','purple')
     create_database()
 
 
@@ -80,6 +79,7 @@ def insert_environment_others(topic_value_array, topic_array, value):
 
 # DATA = THINGY/SERVICE/CHARACTERISTIC://:VALUE
 def insert_environment_data(data):
+    print("data received in db\n")
     topic_value_array = data.split('://:')
     topic_array = topic_value_array[0].split('/')
     value = topic_value_array[1]

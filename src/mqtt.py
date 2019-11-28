@@ -54,9 +54,11 @@ def subscribe_non_stop(thingy, topic):
     ])
     try:
         while True:
+            print("in the while")
             message = yield from client.deliver_message()
             packet = message.publish_packet
             data = packet.variable_header.topic_name + "://:" + packet.payload.data.decode()
+            print("Data received from the thingy : " + data)
             values.append(data)
             insert_environment_data(data)
 
