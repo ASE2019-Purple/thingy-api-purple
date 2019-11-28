@@ -85,3 +85,19 @@ def get_all_pressure():
 
 def get_all_air_quality():
     return client.query('select * from "Thingy-Air-Quality-Characteristic"')
+
+def get_thingy_humidity(thingy):
+    rs = client.query('select * from "Thingy-Humidity-Characteristic"')
+    return list(rs.get_points(tags={'thingy': thingy}))
+
+def get_thingy_temperature(thingy):
+    rs = client.query('select * from "Thingy-Temperature-Characteristic"')
+    return list(rs.get_points(tags={'thingy': thingy}))
+
+def get_thingy_pressure(thingy):
+    rs = client.query('select * from "Thingy-Pressure-Characteristic"')
+    return list(rs.get_points(tags={'thingy': thingy}))
+
+def get_thingy_air_quality(thingy):
+    rs = client.query('select * from "Thingy-Air-Quality-Characteristic"')
+    return list(rs.get_points(tags={'thingy': thingy}))

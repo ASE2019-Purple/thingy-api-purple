@@ -5,6 +5,8 @@ docker run -p 8086:8086 \
       -v influxdb:/var/lib/influxdb \
       influxdb
 
+docker run -p 8086:8086 -v influxdb:/var/lib/influxdb influxdb
+
 Run the API (api_environment.py)
 --------------------------------
 python3 -m aiohttp.web -P 8080 api_environment:app_factory

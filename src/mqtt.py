@@ -12,7 +12,7 @@ client = None
 thingys = {
     "Thingy1": "fe:84:88:ca:47:ca/",
     "Thingy2": "macaddress2/",
-    "Thingy3": "macaddress3/"
+    "Thingy3": "fe:0f:3c:ed:a3:d6/"
 }
 
 topics = {
