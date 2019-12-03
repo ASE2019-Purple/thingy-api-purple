@@ -100,20 +100,8 @@ def get_characteristic_by_hours(characteristic, date, startHour, endHour):
     query = 'SELECT * FROM "'+characteristic+'" WHERE time >= \''+date+'T'+startHour+':00Z\' AND time <= \''+date+'T'+endHour+':00Z\''
     return client.query(query)
 
-def get_thingy_humidity(thingy):
-    rs = client.query('select * from "Thingy-Humidity-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_temperature(thingy):
-    rs = client.query('select * from "Thingy-Temperature-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_pressure(thingy):
-    rs = client.query('select * from "Thingy-Pressure-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_air_quality(thingy):
-    rs = client.query('select * from "Thingy-Air-Quality-Characteristic"')
+def get_thingy_last_characteristic(thingy, characteristic):
+    rs = client.query('SELECT * FROM "'+characteristic+'" GROUP BY * ORDER BY DESC LIMIT 1')
     return list(rs.get_points(tags={'thingy': thingy}))
 
 def create_retention_policy(name, duration, default):
