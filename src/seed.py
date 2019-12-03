@@ -10,6 +10,7 @@ async def main():
     await mqtt.subscribe_non_stop(mqtt.thingys['Thingy1'], mqtt.topics['EnvironmentAll']) 
     # db.insert_bulk(values)
 
+
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())
 

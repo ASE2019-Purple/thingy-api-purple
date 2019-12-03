@@ -89,21 +89,16 @@ def insert_environment_data(data):
 
     return insert_environment_others(topic_value_array, topic_array, value)
 
+def get_all(characteristic):
+    return client.query('select * from "'+characteristic+'"')
 
-def get_all_humidity():
-    return client.query('select * from "Thingy-Humidity-Characteristic"')
+def get_characteristic_by_day(characteristic, date):
+    query = 'SELECT * FROM "'+characteristic+'" WHERE time >= \''+date+'T00:00:00Z\' AND time <= \''+date+'T23:59:00Z\''
+    return client.query(query)
 
-
-def get_all_temperature():
-    return client.query('select * from "Thingy-Temperature-Characteristic"')
-
-
-def get_all_pressure():
-    return client.query('select * from "Thingy-Pressure-Characteristic"')
-
-
-def get_all_air_quality():
-    return client.query('select * from "Thingy-Air-Quality-Characteristic"')
+def get_characteristic_by_hours(characteristic, date, startHour, endHour):
+    query = 'SELECT * FROM "'+characteristic+'" WHERE time >= \''+date+'T'+startHour+':00Z\' AND time <= \''+date+'T'+endHour+':00Z\''
+    return client.query(query)
 
 def get_thingy_humidity(thingy):
     rs = client.query('select * from "Thingy-Humidity-Characteristic"')
@@ -120,3 +115,9 @@ def get_thingy_pressure(thingy):
 def get_thingy_air_quality(thingy):
     rs = client.query('select * from "Thingy-Air-Quality-Characteristic"')
     return list(rs.get_points(tags={'thingy': thingy}))
+
+def create_retention_policy(name, duration, default):
+    client.create_retention_policy(name, duration, 1, database=INFLUXDB_DB, default=default, shard_duration=duration)
+
+def get_list_retention_policies():
+    return client.get_list_retention_policies(database=INFLUXDB_DB)

@@ -4,24 +4,57 @@ from aiohttp.web import run_app
 from aiohttp import web
 import aiohttp_cors
 
+thingy_temperature_charac = "Thingy-Temperature-Characteristic"
+thingy_humidity_charac = "Thingy-Humidity-Characteristic"
+thingy_pressure_charac = "Thingy-Pressure-Characteristic"
+thingy_air_quality_charac = "Thingy-Air-Quality-Characteristic"
 
 def get_temperature(request):
-    temperatures = list(db.get_all_temperature())
+    print(request.query_string)
+    temperatures = list(db.get_all(thingy_temperature_charac))
     return web.json_response(temperatures)
 
+def get_temperature_filter(request):
+    #Get parameters form the url
+    params = dict(x.split("=") for x in request.query_string.split("&"))
+
+    #Check corectness of the params
+    filterByHours = True
+
+    date = None
+    startHour = None
+    endHour = None
+    try:
+        date = params['date']
+    except:
+        return web.json_response("Bad request, date is mandatory", status=400)
+
+    try:
+        startHour = params['startHour']
+        endHour = params['endHour']
+    except:
+        filterByHours = False
+    
+    #Get data from db
+    temperatures = []
+    if filterByHours:
+        temperatures = list(db.get_characteristic_by_hours(thingy_temperature_charac, date, startHour, endHour))
+    else:
+        temperatures = list(db.get_characteristic_by_day(thingy_temperature_charac, date))
+
+    return web.json_response(temperatures)
 
 def get_humidity(request):
-    humidities = list(db.get_all_humidity())
+    humidities = list(db.get_all(thingy_humidity_charac))
     return web.json_response(humidities)
 
 
 def get_air_quality(request):
-    list_airquality = list(db.get_all_air_quality())
+    list_airquality = list(db.get_all(thingy_air_quality_charac))
     return web.json_response(list_airquality)
 
-
 def get_pressure(request):
-    pressures = list(db.get_all_pressure())
+    pressures = list(db.get_all(thingy_pressure_charac))
     return web.json_response(pressures)
 
 def get_things(request):
@@ -79,6 +112,9 @@ async def app_factory(args=()):
     # Temperature routes
     temperature_route = cors.add(app.router.add_resource('/temperature'))
     cors.add(temperature_route.add_route("GET", get_temperature))
+
+    temperature_params_route = cors.add(app.router.add_resource('/temperature/filter'))
+    cors.add(temperature_params_route.add_route("GET", get_temperature_filter))
 
     # Humidity routes
     humidity_route = cors.add(app.router.add_resource('/humidity'))

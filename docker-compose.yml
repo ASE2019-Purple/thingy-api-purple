@@ -12,8 +12,6 @@ services:
       - TZ=Europe/Amsterdam
     ports:
       - "1880:1880"
-#    networks:
-#      - node-red-net
     volumes:
       - node-red:/data
     env_file:
@@ -27,6 +25,7 @@ services:
     volumes:
       - influxdb:/var/lib/influxdb
   # app:
+  #   image: thingy-api
   #   build: .
   #   restart: always
   #   env_file:
