@@ -124,8 +124,11 @@ module.exports = {
     adminAuth: {
         type: "credentials",
         users: [{
-            username: process.env.ADMIN_NAME,
-            password: bcrypt.hashSync(process.env.ADMIN_NAME),
+            //username: process.env.ADMIN_NAME,
+            username: 'purple',
+
+//            password: bcrypt.hashSync(process.env.ADMIN_PASS),
+            password: '$2a$08$CaYJ.Mzo59AeuETcPWIGQOeQ.dZc7ZC1dADw8PPOpx1UJ0QEeMF/y',
             permissions: "*"
         }]
     },

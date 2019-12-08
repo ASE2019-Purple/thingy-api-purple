@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/ASE2019-Purple/thingy-api-purple.git"
   },
+  "scripts": {
+    "start": "node node_modules\node-red\red.js -s settings.js subflow.json"
+  },
   "author": "Narek",
   "license": "UNLICENSED",
   "dependencies": {

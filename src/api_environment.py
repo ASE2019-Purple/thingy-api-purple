@@ -130,7 +130,7 @@ async def app_factory(args=()):
 
     # Pressure routes
     pressure_route = cors.add(app.router.add_resource('/pressure'))
-    cors.add(pressure_route.add_route("GET", get_air_quality))
+    cors.add(pressure_route.add_route("GET", get_pressure))
 
     # Air quality routes
     air_quality_route = cors.add(app.router.add_resource('/air-quality'))
@@ -154,4 +154,4 @@ async def app_factory(args=()):
     return app
     
 if __name__ == '__main__':
-    run_app(app_factory(), host='0.0.0.0', port=8080)
+    run_app(app_factory(), host='0.0.0.0', port=8081)
