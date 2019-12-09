@@ -1,4 +1,4 @@
-import db
+import influx
 import logging
 from aiohttp.web import run_app
 from aiohttp import web
@@ -14,7 +14,7 @@ thingy_air_quality_charac = "Thingy-Air-Quality-Characteristic"
 #API METHODS
 #------------------------------------------------------------------------------
 def get_temperature(request):
-    temperatures = list(db.get_all(thingy_temperature_charac))
+    temperatures = list(influx.get_all(thingy_temperature_charac))
     return web.json_response(temperatures)
 
 def get_temperature_filter(request):
@@ -58,15 +58,15 @@ def get_air_quality_filter(request):
     return web.json_response(list_airquality)
 
 def get_humidity(request):
-    humidities = list(db.get_all(thingy_humidity_charac))
+    humidities = list(influx.get_all(thingy_humidity_charac))
     return web.json_response(humidities)
 
 def get_air_quality(request):
-    list_airquality = list(db.get_all(thingy_air_quality_charac))
+    list_airquality = list(influx.get_all(thingy_air_quality_charac))
     return web.json_response(list_airquality)
 
 def get_pressure(request):
-    pressures = list(db.get_all(thingy_pressure_charac))
+    pressures = list(influx.get_all(thingy_pressure_charac))
     return web.json_response(pressures)
 
 def get_things(request):
@@ -89,7 +89,7 @@ def get_thing_property(request):
     thing_id = request.match_info['id']
     # property_type = int(request.match_info['type'])
     # property = [property_type]
-    property = db.get_thingy_temperature(thing_id)
+    property = influx.get_thingy_temperature(thing_id)
     return web.json_response(property)
 
 async def put_thing_property(request):
@@ -130,11 +130,11 @@ def get_filter_data(characteristic, params):
     except:
         filterByHours = False
     
-    #Get data from db
+    #Get data from influx db
     if filterByHours:
-        return list(db.get_characteristic_by_hours(characteristic, date, startHour, endHour))
+        return list(influx.get_characteristic_by_hours(characteristic, date, startHour, endHour))
     
-    return list(db.get_characteristic_by_day(characteristic, date))
+    return list(influx.get_characteristic_by_day(characteristic, date))
 
 
 def validate_date(date):
@@ -147,7 +147,7 @@ def validate_date(date):
 #------------------------------------------------------------------------------
 async def app_factory(args=()):
     # init the db
-    await db.init_db()
+    await influx.init_db()
     # Create web app
     app = web.Application()
 
