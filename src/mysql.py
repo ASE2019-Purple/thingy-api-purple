@@ -12,11 +12,11 @@ async def init_db():
                              db="purple",
                              charset='utf8mb4')
 
-def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days):
+def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thingy_id):
     #insert data into the database
     with connection.cursor() as cursor:
-        sql = 'INSERT INTO `plants` (name, nb_sunny_days, nb_rainy_days, watering_interval_days) VALUES(%s,%s,%s,%s)'
-        cursor.execute(sql,(name, nb_sunny_days, nb_rainy_days, watering_interval_days))
+        sql = 'INSERT INTO `plants` (name, nb_sunny_days, nb_rainy_days, watering_interval_days) VALUES(%s,%s,%s,%s,%s)'
+        cursor.execute(sql,(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thingy_id))
         connection.commit()
         cursor.close()
 
@@ -38,7 +38,8 @@ def get_all_plants():
             "name":plant[1],
             "nb_sunny_days":plant[2],
             "nb_rainy_days":plant[3],
-            "watering_interval_days":plant[4]
+            "watering_interval_days":plant[4],
+            "thingy_id":plant[5]
         }
         plants.append(obj)
 
@@ -60,6 +61,7 @@ def get_plant_by_id(id):
         "name":result[1],
         "nb_sunny_days":result[2],
         "nb_rainy_days":result[3],
-        "watering_interval_days":result[4]
+        "watering_interval_days":result[4],
+        "thingy_id":result[5]
     }
     return obj

@@ -147,7 +147,7 @@ def get_plants(request):
 
 async def add_plant(request):
     data = await request.json()
-    mysql.insert_plant(data['name'], data['nb_sunny_days'], data['nb_rainy_days'], data['watering_interval_days'])
+    mysql.insert_plant(data['name'], data['nb_sunny_days'], data['nb_rainy_days'], data['watering_interval_days'], data['thingy_id'])
     raise web.HTTPFound('/plants')
 
 #LOGIC METHODS
