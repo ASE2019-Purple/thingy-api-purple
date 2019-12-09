@@ -13,10 +13,9 @@ async def main():
     # print(influx.get_characteristic_by_day('Thingy-Temperature-Characteristic', '2019-12-03'))
     # print(influx.get_characteristic_by_hours('Thingy-Temperature-Characteristic', '2019-12-03', '14:00', '15:00'))
     await mysql.init_db()
+    mysql.insert_thingy("fe:84:88:ca:47:ca")
     # print(mysql.get_all_plants())
-    # print(mysql.insert_plant("testplant", 1,2,2))
-    print(mysql.get_all_plants())
-    print(mysql.get_plant_by_id(2))
+    # print(mysql.get_plant_by_id(2))
 
 
 if __name__ == "__main__":

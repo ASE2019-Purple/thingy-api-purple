@@ -12,6 +12,14 @@ async def init_db():
                              db="purple",
                              charset='utf8mb4')
 
+def insert_thingy(mac_address):
+    with connection.cursor() as cursor:
+        sql = 'INSERT INTO `thingys` (mac_address) VALUES(%s)'
+        cursor.execute(sql,(mac_address))
+        connection.commit()
+        cursor.close()
+
+
 def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thingy_id):
     #insert data into the database
     with connection.cursor() as cursor:
