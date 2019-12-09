@@ -1,7 +1,7 @@
 import logging
 import asyncio
 
-from db import insert_bulk, insert_environment_data
+from influx import insert_bulk, insert_environment_data
 from hbmqtt.client import MQTTClient, ClientException
 from hbmqtt.mqtt.constants import QOS_1, \
     QOS_2  # QOS_1 means from publishing client to broker, QOS_2 from broker to subscribing client

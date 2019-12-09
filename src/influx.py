@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 from influxdb import InfluxDBClient
 from pathlib import Path  # python3 only
 
-env_path = Path('..') / '.env'
-load_dotenv(dotenv_path=env_path)
 
 client = None
 
@@ -17,9 +15,8 @@ INFLUXDB_DB = os.getenv("INFLUXDB_DB")
 
 async def init_db():
     global client
-    client = InfluxDBClient('35.241.155.14',8086,'purple','purple','purple')
+    client = InfluxDBClient("35.241.155.14","8086","purple","purple","purple")
     create_database()
-
 
 def create_database():
     for db in client.get_list_database():
@@ -100,24 +97,12 @@ def get_characteristic_by_hours(characteristic, date, startHour, endHour):
     query = 'SELECT * FROM "'+characteristic+'" WHERE time >= \''+date+'T'+startHour+':00Z\' AND time <= \''+date+'T'+endHour+':00Z\''
     return client.query(query)
 
-def get_thingy_humidity(thingy):
-    rs = client.query('select * from "Thingy-Humidity-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_temperature(thingy):
-    rs = client.query('select * from "Thingy-Temperature-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_pressure(thingy):
-    rs = client.query('select * from "Thingy-Pressure-Characteristic"')
-    return list(rs.get_points(tags={'thingy': thingy}))
-
-def get_thingy_air_quality(thingy):
-    rs = client.query('select * from "Thingy-Air-Quality-Characteristic"')
+def get_thingy_last_characteristic(thingy, characteristic):
+    rs = client.query('SELECT * FROM "'+characteristic+'" GROUP BY * ORDER BY DESC LIMIT 1')
     return list(rs.get_points(tags={'thingy': thingy}))
 
 def create_retention_policy(name, duration, default):
-    client.create_retention_policy(name, duration, 1, database=INFLUXDB_DB, default=default, shard_duration=duration)
+    client.create_retention_policy(name, duration, 1, database="purple", default=default, shard_duration=duration)
 
 def get_list_retention_policies():
-    return client.get_list_retention_policies(database=INFLUXDB_DB)
+    return client.get_list_retention_policies(database="purple")
