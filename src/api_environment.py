@@ -4,6 +4,7 @@ import logging
 from aiohttp.web import run_app
 from aiohttp import web
 import aiohttp_cors
+import datetime
 
 properties_types = {
     "temperature": "Thingy-Temperature-Characteristic",
@@ -17,7 +18,6 @@ thingys = ["fe:84:88:ca:47:ca", "e6:97:3d:de:ca:a3", "fe:0f:3c:ed:a3:d6"]
 #THINGY API METHODS
 #------------------------------------------------------------------------------
 def get_temperature(request):
-    print(request.query_string)
     temperatures = list(influx.get_all(properties_types["temperature"]))
     return web.json_response(temperatures)
 
@@ -25,7 +25,7 @@ def get_temperature_filter(request):
     params = dict(x.split("=") for x in request.query_string.split("&"))
     temperatures = []
     try:
-        temperatures = get_filter_data(thingy_temperature_charac, params)
+        temperatures = get_filter_data(properties_types['temperature'], params)
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 
@@ -35,7 +35,7 @@ def get_humidity_filter(request):
     params = dict(x.split("=") for x in request.query_string.split("&"))
     humidities = []
     try:
-        humidities = get_filter_data(thingy_humidity_charac, params)
+        humidities = get_filter_data(properties_types['humidity'], params)
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 
@@ -45,24 +45,17 @@ def get_pressure_filter(request):
     params = dict(x.split("=") for x in request.query_string.split("&"))
     pressures = []
     try:
-        pressures = get_filter_data(thingy_pressure_charac, params)
+        pressures = get_filter_data(properties_types['pressure'], params)
     except:
-        filterByHours = False
+        return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
     
-    #Get data from db
-    temperatures = []
-    if filterByHours:
-        temperatures = list(influx.get_characteristic_by_hours(properties_types["temperature"], date, startHour, endHour))
-    else:
-        temperatures = list(influx.get_characteristic_by_day(properties_types["temperature"], date))
-
     return web.json_response(pressures)
 
 def get_air_quality_filter(request):
     params = dict(x.split("=") for x in request.query_string.split("&"))
     list_airquality = []
     try:
-        list_airquality = get_filter_data(thingy_air_quality_charac, params)
+        list_airquality = get_filter_data(properties_types['airquality'], params)
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 

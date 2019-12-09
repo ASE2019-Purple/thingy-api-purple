@@ -3,4 +3,4 @@ WORKDIR /app
 COPY . /app
 RUN pip install -r requirements.txt
 EXPOSE 8081
-CMD ["python", "src/api_environment.py" ]
+CMD ["python3", "src/api_environment.py" ]
