@@ -12,10 +12,10 @@ async def init_db():
                              db="purple",
                              charset='utf8mb4')
 
-def insert_thingy(mac_address):
+def insert_thingy(mac_address, location):
     with connection.cursor() as cursor:
-        sql = 'INSERT INTO `thingys` (mac_address) VALUES(%s)'
-        cursor.execute(sql,(mac_address))
+        sql = 'INSERT INTO `thingys` (mac_address, location) VALUES(%s, %s)'
+        cursor.execute(sql,(mac_address, location))
         connection.commit()
         cursor.close()
 
@@ -47,13 +47,14 @@ def get_all_plants():
             "nb_sunny_days":plant[2],
             "nb_rainy_days":plant[3],
             "watering_interval_days":plant[4],
-            "thingy_id":plant[5]
+            "start_date": plant[5],
+            "thingy_id":plant[6]
         }
         plants.append(obj)
 
     return plants
 
-def get_plant_by_id(id):
+async def get_plant_by_id(id):
     result = None
     with connection.cursor() as cursor:
         sql = "SELECT `*` FROM plants WHERE id=%s"
@@ -71,5 +72,23 @@ def get_plant_by_id(id):
         "nb_rainy_days":result[3],
         "watering_interval_days":result[4],
         "thingy_id":result[5]
+    }
+    return obj
+
+async def get_thingy_by_id(id):
+    result = None
+    with connection.cursor() as cursor:
+        sql = "SELECT `*` FROM thingys WHERE id=%s"
+        cursor.execute(sql,(id))
+        result = cursor.fetchone()
+        cursor.close()
+
+    if result == None:
+        return result
+        
+    obj = {
+        "id":result[0],
+        "mac_address":result[1],
+        "location":result[2],
     }
     return obj

@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import time
 
 from influx import insert_bulk, insert_environment_data
 from hbmqtt.client import MQTTClient, ClientException
@@ -54,12 +55,13 @@ def subscribe_non_stop(thingy, topic):
     ])
     try:
         while True:
+            time.sleep(10)
             message = yield from client.deliver_message()
             packet = message.publish_packet
             data = packet.variable_header.topic_name + "://:" + packet.payload.data.decode()
             print("Data received from the thingy : " + data)
             values.append(data)
             insert_environment_data(data)
-
     except ClientException as ce:
         logging.error("Client exception: %s" % ce)
+        return "error"

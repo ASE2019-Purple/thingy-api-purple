@@ -14,7 +14,7 @@ owm = OWM(API_key=API_KEY, language='en')
 FribourgId = 2660718
 
 
-def get_weather_for_5_days(location):
+async def get_weather_for_5_days(location):
     fc = owm.three_hours_forecast(location)
     _forecast = fc.get_forecast()
     list_forecast = []
@@ -58,4 +58,4 @@ def get_weather_for_5_days_lat_lon(_lat, _lon):
 
 # print(get_weather_for_5_days('Fribourg, CH'))
 
-print(get_weather_for_5_days_lat_lon(lat, lon))
+# print(get_weather_for_5_days_lat_lon(lat, lon))
