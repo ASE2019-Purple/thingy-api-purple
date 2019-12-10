@@ -1,0 +1,267 @@
+[
+    {
+        "id": "2ebdc8ca.83aeb8",
+        "type": "tab",
+        "label": "Notifications",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "117e69ff.b92876",
+        "type": "telegram command",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Start command",
+        "command": "/start",
+        "bot": "20240833.c31118",
+        "strict": false,
+        "x": 200,
+        "y": 180,
+        "wires": [
+            [
+                "64ebe977.f06968"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "64ebe977.f06968",
+        "type": "function",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Welcome Message",
+        "func": "msg.payload = {\n  content: `Welcome! This is your chatId: ${msg.payload.chatId}`,\n  chatId: msg.payload.chatId,\n  type: \"message\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 470,
+        "y": 180,
+        "wires": [
+            [
+                "6f752836.51afa8"
+            ]
+        ]
+    },
+    {
+        "id": "6f752836.51afa8",
+        "type": "telegram sender",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Telegram Sender",
+        "bot": "20240833.c31118",
+        "x": 735,
+        "y": 180,
+        "wires": [
+            []
+        ],
+        "l": false
+    },
+    {
+        "id": "6773bcda.737cd4",
+        "type": "mqtt in",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "",
+        "topic": "notification",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "ce3f4581.7ec528",
+        "x": 180,
+        "y": 380,
+        "wires": [
+            [
+                "3a18038.81decfc"
+            ]
+        ]
+    },
+    {
+        "id": "7f10f0ee.adaf4",
+        "type": "function",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "stringify -> Marco",
+        "func": "msg.payload = {\n  content: \"Error: \" + JSON.stringify(msg.payload),\n  chatId: 693432072,\n  type: \"message\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 390,
+        "y": 80,
+        "wires": [
+            [
+                "6f752836.51afa8"
+            ]
+        ]
+    },
+    {
+        "id": "3a18038.81decfc",
+        "type": "json",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "JSON.parse",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 350,
+        "y": 380,
+        "wires": [
+            [
+                "18ac3ec9.223451"
+            ]
+        ]
+    },
+    {
+        "id": "18ac3ec9.223451",
+        "type": "switch",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Telegram check",
+        "property": "payload.contact.telegram",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 560,
+        "y": 360,
+        "wires": [
+            [
+                "92775b13.635978"
+            ]
+        ]
+    },
+    {
+        "id": "92775b13.635978",
+        "type": "function",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "transform",
+        "func": "msg.payload = {\n  content: msg.payload.msg,\n  chatId: msg.payload.contact.telegram,\n  type: \"message\"\n};\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 740,
+        "y": 360,
+        "wires": [
+            [
+                "9cf7a50.624b258",
+                "4c132a44.a86224"
+            ]
+        ]
+    },
+    {
+        "id": "4c132a44.a86224",
+        "type": "debug",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 950,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "9cf7a50.624b258",
+        "type": "telegram sender",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Telegram Sender",
+        "bot": "20240833.c31118",
+        "x": 970,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "77595265.92e7ac",
+        "type": "catch",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "",
+        "scope": null,
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "7f10f0ee.adaf4"
+            ]
+        ]
+    },
+    {
+        "id": "9eb8e422.c9fb18",
+        "type": "inject",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 180,
+        "y": 280,
+        "wires": [
+            [
+                "1ada0f29.1e0e91"
+            ]
+        ]
+    },
+    {
+        "id": "1ada0f29.1e0e91",
+        "type": "function",
+        "z": "2ebdc8ca.83aeb8",
+        "name": "Only for test message",
+        "func": "msg.payload = {}\nmsg.payload.chatId = \"693432072\"\nmsg.payload.type = \"message\";\nmsg.payload.content = \"hello from node-red\";\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 480,
+        "y": 280,
+        "wires": [
+            [
+                "9cf7a50.624b258"
+            ]
+        ]
+    },
+    {
+        "id": "20240833.c31118",
+        "type": "telegram bot",
+        "z": "",
+        "botname": "Thingy Purple",
+        "usernames": "",
+        "chatids": "693432072",
+        "baseapiurl": "",
+        "pollinterval": "300",
+        "usesocks": false,
+        "sockshost": "",
+        "socksport": "",
+        "socksusername": "",
+        "sockspassword": "",
+        "bothost": "",
+        "localbotport": "",
+        "publicbotport": "",
+        "privatekey": "",
+        "certificate": "",
+        "useselfsignedcertificate": false,
+        "verboselogging": false
+    },
+    {
+        "id": "ce3f4581.7ec528",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "thingy-mqtt",
+        "broker": "mqtt.thing.zone",
+        "port": "1897",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    }
+]

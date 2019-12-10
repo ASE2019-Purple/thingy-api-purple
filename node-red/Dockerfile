@@ -2,10 +2,9 @@ FROM nodered/node-red:latest-minimal
 WORKDIR /data
 
 COPY package.json .
-RUN yarn install
-
 COPY settings.js .
-COPY subflow.json /data/flows.json
+COPY subflow_notify_telegram.json .
+RUN yarn install
 
 WORKDIR /usr/src/node-red
 VOLUME /data

@@ -66,11 +66,11 @@ module.exports = {
     //debugUseColors: true,
 
     // The file containing the flows. If not set, it defaults to flows_<hostname>.json
-    //flowFile: 'flows.json',
+    flowFile: 'subflow_notify_telegram.json',
 
     // To enabled pretty-printing of the flow within the flow file, set the following
     //  property to true:
-    //flowFilePretty: true,
+    flowFilePretty: true,
 
     // By default, credentials are encrypted in storage using a generated key. To
     // specify your own secret, set the following property.
@@ -124,11 +124,11 @@ module.exports = {
     adminAuth: {
         type: "credentials",
         users: [{
-            //username: process.env.ADMIN_NAME,
-            username: 'purple',
+            username: process.env.ADMIN_NAME,
+            //username: 'purple',
 
-//            password: bcrypt.hashSync(process.env.ADMIN_PASS),
-            password: '$2a$08$CaYJ.Mzo59AeuETcPWIGQOeQ.dZc7ZC1dADw8PPOpx1UJ0QEeMF/y',
+            password: bcrypt.hashSync(process.env.ADMIN_PASS),
+            //password: '$2a$08$CaYJ.Mzo59AeuETcPWIGQOeQ.dZc7ZC1dADw8PPOpx1UJ0QEeMF/y',
             permissions: "*"
         }]
     },

@@ -13,6 +13,8 @@
   "license": "UNLICENSED",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "node-red-contrib-telegrambot": "^7.0.0",
+    "node-red-contrib-telegrambot-home": "^0.5.2",
     "node-red-dashboard": "^2.18.0"
   }
 }
