@@ -54,7 +54,7 @@ def get_all_plants():
 
     return plants
 
-async def get_plant_by_id(id):
+def get_plant_by_id(id):
     result = None
     with connection.cursor() as cursor:
         sql = "SELECT `*` FROM plants WHERE id=%s"
@@ -75,11 +75,11 @@ async def get_plant_by_id(id):
     }
     return obj
 
-async def get_thingy_by_id(id):
+def get_thingy_by_id(id):
     result = None
     with connection.cursor() as cursor:
-        sql = "SELECT `*` FROM thingys WHERE id=%s"
-        cursor.execute(sql,(id))
+        sql = 'SELECT `*` FROM thingys WHERE id=%s'
+        cursor.execute(sql, (id))
         result = cursor.fetchone()
         cursor.close()
 

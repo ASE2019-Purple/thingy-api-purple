@@ -18,59 +18,91 @@ thingys = ["fe:84:88:ca:47:ca", "e6:97:3d:de:ca:a3", "fe:0f:3c:ed:a3:d6"]
 #THINGY API METHODS
 #------------------------------------------------------------------------------
 def get_temperature(request):
-    temperatures = list(influx.get_all(properties_types["temperature"]))
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
+    temperatures = list(influx.get_all(properties_types["temperature"], thingy['mac_address']))
     return web.json_response(temperatures)
 
 def get_temperature_filter(request):
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
     params = dict(x.split("=") for x in request.query_string.split("&"))
     temperatures = []
     try:
-        temperatures = get_filter_data(properties_types['temperature'], params)
+        temperatures = get_filter_data(properties_types['temperature'], params, thingy['mac_address'])
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 
     return web.json_response(temperatures)
 
 def get_humidity_filter(request):
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
     params = dict(x.split("=") for x in request.query_string.split("&"))
     humidities = []
     try:
-        humidities = get_filter_data(properties_types['humidity'], params)
+        humidities = get_filter_data(properties_types['humidity'], params, thingy['mac_address'])
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 
     return web.json_response(humidities)
 
 def get_pressure_filter(request):
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
     params = dict(x.split("=") for x in request.query_string.split("&"))
     pressures = []
     try:
-        pressures = get_filter_data(properties_types['pressure'], params)
+        pressures = get_filter_data(properties_types['pressure'], params, thingy['mac_address'])
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
     
     return web.json_response(pressures)
 
 def get_air_quality_filter(request):
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
     params = dict(x.split("=") for x in request.query_string.split("&"))
     list_airquality = []
     try:
-        list_airquality = get_filter_data(properties_types['airquality'], params)
+        list_airquality = get_filter_data(properties_types['airquality'], params, thingy['mac_address'])
     except:
         return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
 
     return web.json_response(list_airquality)
 
 def get_humidity(request):
-    humidities = list(influx.get_all(properties_types["humidity"]))
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
+    humidities = list(influx.get_all(properties_types["humidity"], thingy['mac_address']))
     return web.json_response(humidities)
 
 def get_air_quality(request):
-    list_airquality = list(influx.get_all(properties_types["airquality"]))
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
+    list_airquality = list(influx.get_all(properties_types["airquality"], thingy['mac_address']))
     return web.json_response(list_airquality)
 
 def get_pressure(request):
-    pressures = list(influx.get_all(properties_types["pressure"]))
+    id = int(request.match_info['id'])
+    thingy = mysql.get_thingy_by_id(id)
+    if thingy == None:
+        return web.json_response("Thingy not found", status=404)
+    pressures = list(influx.get_all(properties_types["pressure"],thingy['mac_address']))
     return web.json_response(pressures)
 
 def get_things(request):
@@ -145,7 +177,7 @@ async def add_plant(request):
 
 #LOGIC METHODS
 #------------------------------------------------------------------------------
-def get_filter_data(characteristic, params):
+def get_filter_data(characteristic, params, thingy):
     #Check corectness of the params
     filterByHours = True
     date = None
@@ -165,9 +197,9 @@ def get_filter_data(characteristic, params):
     
     #Get data from influx db
     if filterByHours:
-        return list(influx.get_characteristic_by_hours(characteristic, date, startHour, endHour))
+        return list(influx.get_characteristic_by_hours(characteristic, date, startHour, endHour, thingy))
     
-    return list(influx.get_characteristic_by_day(characteristic, date))
+    return list(influx.get_characteristic_by_day(characteristic, date, thingy))
 
 
 def validate_date(date):
@@ -182,6 +214,7 @@ async def app_factory(args=()):
     # init the db
     await influx.init_db()
     await mysql.init_db()
+
     # Create web app
     app = web.Application()
 
@@ -191,27 +224,27 @@ async def app_factory(args=()):
                                                                           allow_headers="*")})
 
     # Temperature routes
-    temperature_route = cors.add(app.router.add_resource('/temperature'))
+    temperature_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/temperature'))
     cors.add(temperature_route.add_route("GET", get_temperature))
-    temperature_filter_route = cors.add(app.router.add_resource('/temperature/filter'))
+    temperature_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/temperature/filter'))
     cors.add(temperature_filter_route.add_route("GET", get_temperature_filter))
 
     # Humidity routes
-    humidity_route = cors.add(app.router.add_resource('/humidity'))
+    humidity_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/humidity'))
     cors.add(humidity_route.add_route("GET", get_humidity))
-    humidity_filter_route = cors.add(app.router.add_resource('/humidity/filter'))
+    humidity_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/humidity/filter'))
     cors.add(humidity_filter_route.add_route("GET", get_humidity_filter))
 
     # Pressure routes
-    pressure_route = cors.add(app.router.add_resource('/pressure'))
+    pressure_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/pressure'))
     cors.add(pressure_route.add_route("GET", get_pressure))
-    pressure_filter_route = cors.add(app.router.add_resource('/pressure/filter'))
+    pressure_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/pressure/filter'))
     cors.add(pressure_filter_route.add_route("GET", get_pressure_filter))
 
     # Air quality routes
-    air_quality_route = cors.add(app.router.add_resource('/air-quality'))
+    air_quality_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/air-quality'))
     cors.add(air_quality_route.add_route("GET", get_air_quality))
-    air_quality_filter_route = cors.add(app.router.add_resource('/air-quality/filter'))
+    air_quality_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/air-quality/filter'))
     cors.add(air_quality_filter_route.add_route("GET", get_air_quality_filter))
 
     #Plants routes
