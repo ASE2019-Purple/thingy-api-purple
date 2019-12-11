@@ -256,8 +256,6 @@ async def app_factory(args=()):
     cors.add(plants_route.add_route("POST", add_plant))
 
 
-
-
     # Resources
     # things_resource = cors.add(app.router.add_resource("/things/", name='things'))
     # cors.add(things_resource.add_route("GET", get_things))
