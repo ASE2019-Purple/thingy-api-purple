@@ -6,21 +6,36 @@ from aiohttp import web
 import aiohttp_cors
 import datetime
 
+#PLANTS API METHODS
+#------------------------------------------------------------------------------
+def get_plants(request):
+    result = mysql.select_plants()
+    return web.json_response(result, status=200)
+
+def get_plant(request):
+    result = mysql.select_plant_by_id(request.match_info['id'])
+    if result == None: return web.json_response("Plant not found", status=404)
+    return web.json_response(result, status=200)
+
+async def post_plants(request):
+    data = await request.json()
+    mysql.insert_plant(data['name'], data['nb_sunny_days'], data['nb_rainy_days'], data['watering_interval_days'], data['thing_id'])
+    return web.json_response(data, status=201)
+
 #THINGY API METHODS
 #------------------------------------------------------------------------------
 def get_things(request):
-    things = []
-    # TODO
-    return web.json_response(things)
+    result = mysql.select_things()
+    return web.json_response(result, status=200)
 
 def get_thing(request):
-    thing = mysql.get_thingy_by_id(request.match_info['id'])
-    if thing == None: return web.json_response("Thing not found", status=404)
-    return web.json_response(thing)
+    result = mysql.select_thing_by_id(request.match_info['id'])
+    if result == None: return web.json_response("Thing not found", status=404)
+    return web.json_response(result, status=200)
 
 def get_thing_properties(request):
     results = {}
-    thing = mysql.get_thingy_by_id(request.match_info['id'])
+    thing = mysql.select_thing_by_id(request.match_info['id'])
     if thing == None: return web.json_response("Thing not found", status=404)
     if request.query_string.split("&") == ['']: 
         for property in mysql.select_properties():
@@ -29,10 +44,10 @@ def get_thing_properties(request):
         params = dict(x.split("=") for x in request.query_string.split("&"))
         for property in mysql.select_properties():
             results[property['name']] = get_filter_data(thing['mac_address'], property['characteristic'], params)
-    return web.json_response(results)
+    return web.json_response(results, status=200)
 
 def get_thing_property(request):
-    thing = mysql.get_thingy_by_id(request.match_info['id'])
+    thing = mysql.select_thing_by_id(request.match_info['id'])
     if thing == None: return web.json_response("Thing not found", status=404)
     property = mysql.select_property_by_name(request.match_info['name'])
     if property == None: return web.json_response("Property not found", status=404)
@@ -41,7 +56,7 @@ def get_thing_property(request):
     else:
         params = dict(x.split("=") for x in request.query_string.split("&"))
         result = get_filter_data(thing['mac_address'], property['characteristic'], params)
-    return web.json_response(result)
+    return web.json_response(result, status=200)
 
 async def put_thing_property(request):
     thing_id = request.match_info['id']
@@ -60,31 +75,6 @@ def get_thing_event(request):
     event = [event_type]
     # TODO
     return web.json_response(event)
-
-
-#PLANTS API METHODS
-#------------------------------------------------------------------------------
-def get_plant(request):
-    id = int(request.match_info['id'])
-    result = mysql.get_plant_by_id(id)
-
-    if result == None:
-        return web.json_response("Plant not found", status=404)
-
-    return web.json_response(result, status=200)
-
-def get_plants(request):
-    result = mysql.get_all_plants()
-
-    if result == None:
-        return web.json_response("No plants available", status=404)
-
-    return web.json_response(result, status=200)
-
-async def add_plant(request):
-    data = await request.json()
-    mysql.insert_plant(data['name'], data['nb_sunny_days'], data['nb_rainy_days'], data['watering_interval_days'], data['thingy_id'])
-    raise web.HTTPFound('/plants')
 
 #LOGIC METHODS
 #------------------------------------------------------------------------------
@@ -134,23 +124,19 @@ async def app_factory(args=()):
                               defaults={"*": aiohttp_cors.ResourceOptions(allow_credentials=True, expose_headers="*",
                                                                           allow_headers="*")})
 
-    #Plants routes
-    plant_route = cors.add(app.router.add_resource('/plants/{id:\d+}'))
-    cors.add(plant_route.add_route("GET", get_plant))
-
-    plants_route = cors.add(app.router.add_resource('/plants'))
-    cors.add(plants_route.add_route("GET", get_plants))
-    cors.add(plants_route.add_route("POST", add_plant))
-
-
     # Resources
-    # things_resource = cors.add(app.router.add_resource("/things/", name='things'))
-    # cors.add(things_resource.add_route("GET", get_things))
-    thing_resource = cors.add(app.router.add_resource("/thing/{id:\d+}", name='thing'))
+    plants_resource = cors.add(app.router.add_resource("/plants", name='plants'))
+    cors.add(plants_resource.add_route("GET", get_plants))
+    cors.add(plants_resource.add_route("POST", post_plants))
+    plant_resource = cors.add(app.router.add_resource("/plant/{id:\\d+}", name='plant'))
+    cors.add(plant_resource.add_route("GET", get_plant))
+    things_resource = cors.add(app.router.add_resource("/things", name='things'))
+    cors.add(things_resource.add_route("GET", get_things))
+    thing_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}", name='thing'))
     cors.add(thing_resource.add_route("GET", get_thing))
-    thing_properties_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/properties", name='thing_properties'))
+    thing_properties_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}/properties", name='thing_properties'))
     cors.add(thing_properties_resource.add_route("GET", get_thing_properties))
-    thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/property/{name}", name='thing_property'))
+    thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}/property/{name}", name='thing_property'))
     cors.add(thing_property_resource.add_route("GET", get_thing_property))
     # cors.add(thing_property_resource.add_route("PUT", put_thing_property))
     # thing_events_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/events/", name='thing_events'))
