@@ -86,8 +86,9 @@ def insert_environment_data(data):
 
     return insert_environment_others(topic_value_array, topic_array, value)
 
-def get_all(characteristic, thingy):
-    return client.query('SELECT * FROM "'+characteristic+'" WHERE "thingy"=\''+thingy+'\'')
+def get_thingy_characteristic(thingy, characteristic):
+    rs = client.query('SELECT * FROM "'+characteristic+'" WHERE "thingy"=\''+thingy+'\'')
+    return list(rs.get_points())
 
 def get_characteristic_by_day(characteristic, date, thingy):
     query = 'SELECT * FROM "'+characteristic+'" WHERE "thingy"=\''+thingy+'\' AND time >= \''+date+'T00:00:00Z\' AND time <= \''+date+'T23:59:00Z\''

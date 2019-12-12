@@ -6,131 +6,42 @@ from aiohttp import web
 import aiohttp_cors
 import datetime
 
-properties_types = {
-    "temperature": "Thingy-Temperature-Characteristic",
-    "humidity": "Thingy-Humidity-Characteristic",
-    "pressure": "Thingy-Pressure-Characteristic",
-    "airquality": "Thingy-Air-Quality-Characteristic"
-}
-
-thingys = ["fe:84:88:ca:47:ca", "e6:97:3d:de:ca:a3", "fe:0f:3c:ed:a3:d6"]
-
 #THINGY API METHODS
 #------------------------------------------------------------------------------
-def get_temperature(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    temperatures = list(influx.get_all(properties_types["temperature"], thingy['mac_address']))
-    return web.json_response(temperatures)
-
-def get_temperature_filter(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    params = dict(x.split("=") for x in request.query_string.split("&"))
-    temperatures = []
-    try:
-        temperatures = get_filter_data(properties_types['temperature'], params, thingy['mac_address'])
-    except:
-        return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
-
-    return web.json_response(temperatures)
-
-def get_humidity_filter(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    params = dict(x.split("=") for x in request.query_string.split("&"))
-    humidities = []
-    try:
-        humidities = get_filter_data(properties_types['humidity'], params, thingy['mac_address'])
-    except:
-        return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
-
-    return web.json_response(humidities)
-
-def get_pressure_filter(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    params = dict(x.split("=") for x in request.query_string.split("&"))
-    pressures = []
-    try:
-        pressures = get_filter_data(properties_types['pressure'], params, thingy['mac_address'])
-    except:
-        return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
-    
-    return web.json_response(pressures)
-
-def get_air_quality_filter(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    params = dict(x.split("=") for x in request.query_string.split("&"))
-    list_airquality = []
-    try:
-        list_airquality = get_filter_data(properties_types['airquality'], params, thingy['mac_address'])
-    except:
-        return web.json_response("Bad request, date format should be YYYY-MM-DD", status=400)
-
-    return web.json_response(list_airquality)
-
-def get_humidity(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    humidities = list(influx.get_all(properties_types["humidity"], thingy['mac_address']))
-    return web.json_response(humidities)
-
-def get_air_quality(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    list_airquality = list(influx.get_all(properties_types["airquality"], thingy['mac_address']))
-    return web.json_response(list_airquality)
-
-def get_pressure(request):
-    id = int(request.match_info['id'])
-    thingy = mysql.get_thingy_by_id(id)
-    if thingy == None:
-        return web.json_response("Thingy not found", status=404)
-    pressures = list(influx.get_all(properties_types["pressure"],thingy['mac_address']))
-    return web.json_response(pressures)
-
 def get_things(request):
     things = []
     # TODO
     return web.json_response(things)
 
 def get_thing(request):
-    thing_mac = thingys[int(request.match_info['id'])-1]
-    thing = [thing_mac]
-    # TODO
+    thing = mysql.get_thingy_by_id(request.match_info['id'])
+    if thing == None: return web.json_response("Thing not found", status=404)
     return web.json_response(thing)
 
 def get_thing_properties(request):
-    properties = {}
-    try: thing_mac = thingys[int(request.match_info['id'])-1]
-    except IndexError as e: raise web.HTTPNotFound
-    for key, value in properties_types.items():
-        properties[key] = influx.get_thingy_last_characteristic(thing_mac, value)
-    return web.json_response(properties)
+    results = {}
+    thing = mysql.get_thingy_by_id(request.match_info['id'])
+    if thing == None: return web.json_response("Thing not found", status=404)
+    if request.query_string.split("&") == ['']: 
+        for property in mysql.select_properties():
+            results[property['name']] = influx.get_thingy_characteristic(thing['mac_address'], property['characteristic'])
+    else:
+        params = dict(x.split("=") for x in request.query_string.split("&"))
+        for property in mysql.select_properties():
+            results[property['name']] = get_filter_data(thing['mac_address'], property['characteristic'], params)
+    return web.json_response(results)
 
 def get_thing_property(request):
-    try: thing_mac = thingys[int(request.match_info['id'])-1]
-    except IndexError as e: raise web.HTTPNotFound
-    try: property_type = properties_types[request.match_info['type']]
-    except KeyError as e: raise web.HTTPNotFound
-    property = influx.get_thingy_last_characteristic(thing_mac, property_type)
-    return web.json_response(property)
+    thing = mysql.get_thingy_by_id(request.match_info['id'])
+    if thing == None: return web.json_response("Thing not found", status=404)
+    property = mysql.select_property_by_name(request.match_info['name'])
+    if property == None: return web.json_response("Property not found", status=404)
+    if request.query_string.split("&") == ['']: 
+        result = influx.get_thingy_characteristic(thing['mac_address'], property['characteristic'])
+    else:
+        params = dict(x.split("=") for x in request.query_string.split("&"))
+        result = get_filter_data(thing['mac_address'], property['characteristic'], params)
+    return web.json_response(result)
 
 async def put_thing_property(request):
     thing_id = request.match_info['id']
@@ -177,7 +88,7 @@ async def add_plant(request):
 
 #LOGIC METHODS
 #------------------------------------------------------------------------------
-def get_filter_data(characteristic, params, thingy):
+def get_filter_data(thingy_mac, characteristic_name, params):
     #Check corectness of the params
     filterByHours = True
     date = None
@@ -197,9 +108,9 @@ def get_filter_data(characteristic, params, thingy):
     
     #Get data from influx db
     if filterByHours:
-        return list(influx.get_characteristic_by_hours(characteristic, date, startHour, endHour, thingy))
+        return list(influx.get_characteristic_by_hours(characteristic_name, date, startHour, endHour, thingy_mac))
     
-    return list(influx.get_characteristic_by_day(characteristic, date, thingy))
+    return list(influx.get_characteristic_by_day(characteristic_name, date, thingy_mac))
 
 
 def validate_date(date):
@@ -223,30 +134,6 @@ async def app_factory(args=()):
                               defaults={"*": aiohttp_cors.ResourceOptions(allow_credentials=True, expose_headers="*",
                                                                           allow_headers="*")})
 
-    # Temperature routes
-    temperature_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/temperature'))
-    cors.add(temperature_route.add_route("GET", get_temperature))
-    temperature_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/temperature/filter'))
-    cors.add(temperature_filter_route.add_route("GET", get_temperature_filter))
-
-    # Humidity routes
-    humidity_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/humidity'))
-    cors.add(humidity_route.add_route("GET", get_humidity))
-    humidity_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/humidity/filter'))
-    cors.add(humidity_filter_route.add_route("GET", get_humidity_filter))
-
-    # Pressure routes
-    pressure_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/pressure'))
-    cors.add(pressure_route.add_route("GET", get_pressure))
-    pressure_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/pressure/filter'))
-    cors.add(pressure_filter_route.add_route("GET", get_pressure_filter))
-
-    # Air quality routes
-    air_quality_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/air-quality'))
-    cors.add(air_quality_route.add_route("GET", get_air_quality))
-    air_quality_filter_route = cors.add(app.router.add_resource('/thingy/{id:\d+}/air-quality/filter'))
-    cors.add(air_quality_filter_route.add_route("GET", get_air_quality_filter))
-
     #Plants routes
     plant_route = cors.add(app.router.add_resource('/plants/{id:\d+}'))
     cors.add(plant_route.add_route("GET", get_plant))
@@ -255,17 +142,14 @@ async def app_factory(args=()):
     cors.add(plants_route.add_route("GET", get_plants))
     cors.add(plants_route.add_route("POST", add_plant))
 
-
-
-
     # Resources
     # things_resource = cors.add(app.router.add_resource("/things/", name='things'))
     # cors.add(things_resource.add_route("GET", get_things))
-    # thing_resource = cors.add(app.router.add_resource("/thing/{id:\d+}", name='thing'))
-    # cors.add(thing_resource.add_route("GET", get_thing))
-    thing_properties_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/properties/", name='thing_properties'))
+    thing_resource = cors.add(app.router.add_resource("/thing/{id:\d+}", name='thing'))
+    cors.add(thing_resource.add_route("GET", get_thing))
+    thing_properties_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/properties", name='thing_properties'))
     cors.add(thing_properties_resource.add_route("GET", get_thing_properties))
-    thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/property/{type}", name='thing_property'))
+    thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/property/{name}", name='thing_property'))
     cors.add(thing_property_resource.add_route("GET", get_thing_property))
     # cors.add(thing_property_resource.add_route("PUT", put_thing_property))
     # thing_events_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/events/", name='thing_events'))

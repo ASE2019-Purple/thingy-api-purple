@@ -92,3 +92,48 @@ def get_thingy_by_id(id):
         "location":result[2],
     }
     return obj
+
+def select_properties():
+    result = None
+    with connection.cursor() as cursor:
+        sql = 'SELECT `*` FROM properties'
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        cursor.close()
+
+    if result == None:
+        return result
+
+    properties = []
+    for property in result:
+        obj = {
+            "id":property[0],
+            "name":property[1],
+            "characteristic":property[2],
+            "type":property[3],
+            "unit":property[4],
+            "readOnly":property[5],
+        }
+        properties.append(obj)
+    return properties
+
+def select_property_by_name(name):
+    result = None
+    with connection.cursor() as cursor:
+        sql = 'SELECT `*` FROM properties WHERE name=%s'
+        cursor.execute(sql, (name))
+        result = cursor.fetchone()
+        cursor.close()
+
+    if result == None:
+        return result
+        
+    obj = {
+        "id":result[0],
+        "name":result[1],
+        "characteristic":result[2],
+        "type":result[3],
+        "unit":result[4],
+        "readOnly":result[5],
+    }
+    return obj
