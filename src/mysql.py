@@ -68,6 +68,27 @@ def select_plant_by_id(id):
     }
     return obj
 
+
+def del_plant_by_id(id):
+    result = None
+    with connection.cursor() as cursor:
+        sql = "delete FROM plants WHERE id=%s"
+        cursor.execute(sql, (id))
+        result = cursor.fetchone()
+        cursor.close()
+
+    obj = {
+        "id": result[0],
+        "name": result[1],
+        "nb_sunny_days": result[2],
+        "nb_rainy_days": result[3],
+        "watering_interval_days": result[4],
+        "start_date": result[5].strftime("%Y-%m-%d"),
+        "thing_id": result[6]
+    }
+    return obj
+
+
 def insert_thing(mac_address, location):
     with connection.cursor() as cursor:
         sql = 'INSERT INTO `things` (mac_address, location) VALUES(%s, %s)'
@@ -159,3 +180,5 @@ def select_property_by_name(name):
         "readOnly":result[5]
     }
     return obj
+
+

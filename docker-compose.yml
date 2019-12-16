@@ -19,11 +19,30 @@ services:
   app:
     build: .
     restart: always
-    env_file:
-      - .env
+    environment:
+      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
+      MYSQL_PORT: 3306
+      MYSQL_USER: purple
+      MYSQL_USER_PASSWORD: purple
+      MYSQL_DB: purple
+      INFLUXDB_HOSTNAME: 35.241.155.14
+      INFLUXDB_PORT: 8086
+      INFLUXDB_DB: purple
+      INFLUXDB_USER: purple
+      INFLUXDB_USER_PASSWORD: purple
     ports:
       - "8081:8081"
-
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - "5080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=35.205.33.242
+      - PMA_PORT=3306
+      - PMA_USER=purple
+      - PMA_PASSWORD=purple
 volumes:
   node-red:
 
