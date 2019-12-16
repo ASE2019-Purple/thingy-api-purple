@@ -4,21 +4,24 @@ import os
 
 connection = None
 
+
 async def init_db():
     global connection
     connection = pymysql.connect(host="35.205.33.242",
-                             user="purple",
-                             password="purple",
-                             db="purple",
-                             charset='utf8mb4')
+                                 user="purple",
+                                 password="purple",
+                                 db="purple",
+                                 charset='utf8mb4')
+
 
 def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thing_id):
     start_date = datetime.now().strftime("%Y-%m-%d")
     with connection.cursor() as cursor:
         sql = 'INSERT INTO `plants` (name, nb_sunny_days, nb_rainy_days, watering_interval_days, start_date, thing_id) VALUES(%s,%s,%s,%s,%s,%s)'
-        cursor.execute(sql,(name, nb_sunny_days, nb_rainy_days, watering_interval_days, start_date, thing_id))
+        cursor.execute(sql, (name, nb_sunny_days, nb_rainy_days, watering_interval_days, start_date, thing_id))
         connection.commit()
         cursor.close()
+
 
 def select_plants():
     result = None
@@ -34,48 +37,29 @@ def select_plants():
     plants = []
     for plant in result:
         obj = {
-            "id":plant[0],
-            "name":plant[1],
-            "nb_sunny_days":plant[2],
-            "nb_rainy_days":plant[3],
-            "watering_interval_days":plant[4],
+            "id": plant[0],
+            "name": plant[1],
+            "nb_sunny_days": plant[2],
+            "nb_rainy_days": plant[3],
+            "watering_interval_days": plant[4],
             "start_date": plant[5].strftime("%Y-%m-%d"),
-            "thing_id":plant[6]
+            "thing_id": plant[6]
         }
         plants.append(obj)
 
     return plants
 
+
 def select_plant_by_id(id):
     result = None
     with connection.cursor() as cursor:
         sql = "SELECT `*` FROM plants WHERE id=%s"
-        cursor.execute(sql,(id))
+        cursor.execute(sql, (id))
         result = cursor.fetchone()
         cursor.close()
 
     if result == None:
         return result
-        
-    obj = {
-        "id":result[0],
-        "name":result[1],
-        "nb_sunny_days":result[2],
-        "nb_rainy_days":result[3],
-        "watering_interval_days":result[4],
-        "start_date": result[5].strftime("%Y-%m-%d"),
-        "thing_id":result[6]
-    }
-    return obj
-
-
-def del_plant_by_id(id):
-    result = None
-    with connection.cursor() as cursor:
-        sql = "delete FROM plants WHERE id=%s"
-        cursor.execute(sql, (id))
-        result = cursor.fetchone()
-        cursor.close()
 
     obj = {
         "id": result[0],
@@ -89,12 +73,39 @@ def del_plant_by_id(id):
     return obj
 
 
+def del_plant_by_id(id):
+    result = None
+    with connection.cursor() as cursor:
+        sql = "SELECT `*` FROM plants WHERE id=%s"
+        cursor.execute(sql, (id))
+        deletedplant = cursor.fetchone()
+        sql = "DELETE FROM plants WHERE id=%s"
+        cursor.execute(sql, (id))
+        result = cursor.fetchone()
+        connection.commit()
+        cursor.close()
+    if deletedplant:
+        obj = {
+            "id": deletedplant[0],
+            "name": deletedplant[1],
+            "nb_sunny_days": deletedplant[2],
+            "nb_rainy_days": deletedplant[3],
+            "watering_interval_days": deletedplant[4],
+            "start_date": deletedplant[5].strftime("%Y-%m-%d"),
+            "thing_id": deletedplant[6]
+        }
+        return obj
+    else:
+        return None
+
+
 def insert_thing(mac_address, location):
     with connection.cursor() as cursor:
         sql = 'INSERT INTO `things` (mac_address, location) VALUES(%s, %s)'
-        cursor.execute(sql,(mac_address, location))
+        cursor.execute(sql, (mac_address, location))
         connection.commit()
         cursor.close()
+
 
 def select_things():
     result = None
@@ -110,13 +121,14 @@ def select_things():
     things = []
     for thing in result:
         obj = {
-            "id":thing[0],
-            "mac_address":thing[1],
-            "location":thing[2]
+            "id": thing[0],
+            "mac_address": thing[1],
+            "location": thing[2]
         }
         things.append(obj)
 
     return things
+
 
 def select_thing_by_id(id):
     result = None
@@ -128,13 +140,14 @@ def select_thing_by_id(id):
 
     if result == None:
         return result
-        
+
     obj = {
-        "id":result[0],
-        "mac_address":result[1],
-        "location":result[2]
+        "id": result[0],
+        "mac_address": result[1],
+        "location": result[2]
     }
     return obj
+
 
 def select_properties():
     result = None
@@ -150,15 +163,16 @@ def select_properties():
     properties = []
     for property in result:
         obj = {
-            "id":property[0],
-            "name":property[1],
-            "characteristic":property[2],
-            "type":property[3],
-            "unit":property[4],
-            "readOnly":property[5]
+            "id": property[0],
+            "name": property[1],
+            "characteristic": property[2],
+            "type": property[3],
+            "unit": property[4],
+            "readOnly": property[5]
         }
         properties.append(obj)
     return properties
+
 
 def select_property_by_name(name):
     result = None
@@ -170,15 +184,13 @@ def select_property_by_name(name):
 
     if result == None:
         return result
-        
+
     obj = {
-        "id":result[0],
-        "name":result[1],
-        "characteristic":result[2],
-        "type":result[3],
-        "unit":result[4],
-        "readOnly":result[5]
+        "id": result[0],
+        "name": result[1],
+        "characteristic": result[2],
+        "type": result[3],
+        "unit": result[4],
+        "readOnly": result[5]
     }
     return obj
-
-
