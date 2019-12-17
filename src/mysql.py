@@ -16,16 +16,16 @@ async def init_db():
     )
 
 
-def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thing_id):
+def insert_plant(name, optimal_temperature, optimal_humidity, watering_interval_days, thing_id):
     start_date = datetime.now().strftime("%Y-%m-%d")
     with connection.cursor() as cursor:
-        sql = "INSERT INTO `plants` (name, nb_sunny_days, nb_rainy_days, watering_interval_days, start_date, thing_id) VALUES(%s,%s,%s,%s,%s,%s)"
+        sql = "INSERT INTO `plants` (name, optimal_temperature, optimal_humidity, watering_interval_days, start_date, thing_id) VALUES(%s,%s,%s,%s,%s,%s)"
         cursor.execute(
             sql,
             (
                 name,
-                nb_sunny_days,
-                nb_rainy_days,
+                optimal_temperature,
+                optimal_humidity,
                 watering_interval_days,
                 start_date,
                 thing_id,
@@ -36,17 +36,17 @@ def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thi
 
 
 def update_plant(
-    plant_id, name, nb_sunny_days, nb_rainy_days, watering_interval_days, thing_id
+    plant_id, name, optimal_temperature, optimal_humidity, watering_interval_days, thing_id
 ):
     start_date = datetime.now().strftime("%Y-%m-%d")
     with connection.cursor() as cursor:
-        sql = "UPDATE `plants` SET name=%s, nb_sunny_days=%s, nb_rainy_days=%s, watering_interval_days=%s, start_date=%s, thing_id=%s WHERE id=%s"
+        sql = "UPDATE `plants` SET name=%s, optimal_temperature=%s, optimal_humidity=%s, watering_interval_days=%s, start_date=%s, thing_id=%s WHERE id=%s"
         cursor.execute(
             sql,
             (
                 name,
-                nb_sunny_days,
-                nb_rainy_days,
+                optimal_temperature,
+                optimal_humidity,
                 watering_interval_days,
                 start_date,
                 thing_id,
@@ -73,8 +73,8 @@ def select_plants():
         obj = {
             "id": plant[0],
             "name": plant[1],
-            "nb_sunny_days": plant[2],
-            "nb_rainy_days": plant[3],
+            "optimal_temperature": plant[2],
+            "optimal_humidity": plant[3],
             "watering_interval_days": plant[4],
             "start_date": plant[5].strftime("%Y-%m-%d"),
             "thing_id": plant[6],
@@ -98,8 +98,8 @@ def select_plant_by_id(id):
     obj = {
         "id": result[0],
         "name": result[1],
-        "nb_sunny_days": result[2],
-        "nb_rainy_days": result[3],
+        "optimal_temperature": result[2],
+        "optimal_humidity": result[3],
         "watering_interval_days": result[4],
         "start_date": result[5].strftime("%Y-%m-%d"),
         "thing_id": result[6],
@@ -122,8 +122,8 @@ def delete_plant_by_id(id):
         obj = {
             "id": deletedplant[0],
             "name": deletedplant[1],
-            "nb_sunny_days": deletedplant[2],
-            "nb_rainy_days": deletedplant[3],
+            "optimal_temperature": deletedplant[2],
+            "optimal_humidity": deletedplant[3],
             "watering_interval_days": deletedplant[4],
             "start_date": deletedplant[5].strftime("%Y-%m-%d"),
             "thing_id": deletedplant[6],
