@@ -108,8 +108,13 @@ def create_retention_policy(name, duration, default):
 def get_list_retention_policies():
     return client.get_list_retention_policies(database="purple")
 
-def create_continuous_query(name, characteristic):
-    client.create_continuous_query(name, 'SELECT mean("{characteristic}") into "{name}" FROM "purple" GROUP BY time(6h)', "purple")
+def create_continuous_query(name, characteristic, thingy):
+    client.create_continuous_query(name, 'SELECT mean("'+characteristic+'") into "'+name+'" FROM "purple" WHERE thingy="'+thingy+'" GROUP BY time(6h)', "purple")
 
 def get_list_continuous_query():
     return client.get_list_continuous_queries()
+
+def get_thingy_average_characteristic(thingy, characteristic, date):
+    query = 'SELECT MEAN(*) FROM "'+characteristic+'" WHERE thingy=\''+thingy+'\' AND time >= \''+date+'T00:00:00Z\' AND time <= \''+date+'T23:59:59Z\''
+    return client.query(query)
+
