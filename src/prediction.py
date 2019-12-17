@@ -4,8 +4,6 @@ import asyncio
 import weather
 from datetime import datetime, date, timedelta
 
-optimal_humidity = 80
-optimal_temperature = 20
 optimal_rain_volume = 1
 accepted_tolerance_temperature = 3
 accepted_tolerance_humidity = 20
@@ -35,17 +33,10 @@ async def predict(plant_id, thingy_id):
 def generate_prediction_calendar(startDate, plant, thingy, weather_prediction):
     calendar = []
 
-    nb_sunny_days = 0
-    nb_rainy_days = 0
-    nb_optimal_days = 0
-
-    total_days = 0
-
     #Get thingy info for past dates
     dateString = startDate
     currentDate = datetime.strptime(dateString, "%Y-%m-%d")
     while currentDate < datetime.now() and currentDate.strftime("%Y-%m-%d") != datetime.now().strftime("%Y-%m-%d"):
-        total_days += 1
         print("Getting thingy info for date : " + dateString)
         average_temperature = influx.get_thingy_average_characteristic(thingy['mac_address'], "Thingy-Temperature-Characteristic", dateString)
         average_humidity = influx.get_thingy_average_characteristic(thingy['mac_address'], "Thingy-Humidity-Characteristic", dateString)
@@ -63,13 +54,7 @@ def generate_prediction_calendar(startDate, plant, thingy, weather_prediction):
         currentDate = currentDate + timedelta(days=1)
         dateString = currentDate.strftime("%Y-%m-%d")
 
-    print("OUT OF THE WHILE")
-    print("NB SUNNY DAYS : " + str(nb_sunny_days))
-    print("NB RAINY DAYS : " + str(nb_rainy_days))
-    print("NB OPTIMAL DAYS : " + str(nb_optimal_days))
-    print("TOTAL DAYS : " + str(total_days))
 
-    print("avant parcourir les weather" + dateString)
     current_temperature = 0
     current_rain_volume = 0
     cpt = 0
@@ -120,7 +105,7 @@ def evaluate_calendar(cal, plant):
         print("days since optimal : " + str(days_since_optimal))
         #Thingy prediction
         if x['type'] == 'thingy':
-            if is_optimal_day_thingy(x['temperature'], x['humidity']):
+            if is_optimal_day_thingy(x['temperature'], x['humidity'], plant['optimal_temperature'], plant['optimal_humidity']):
                days_since_optimal = 0
                calendar.append({"date": x['date'], "watering": False})
             elif days_since_optimal == plant['watering_interval_days'] -1:
@@ -131,7 +116,7 @@ def evaluate_calendar(cal, plant):
                 days_since_optimal += 1
         #Weather prediction            
         else:
-            if is_optimal_day_weather(x['temperature'], x['rain_volume']):
+            if is_optimal_day_weather(x['temperature'], x['rain_volume'],plant['optimal_temperature']):
                 days_since_optimal = 0
                 calendar.append({"date": x['date'], "watering": False})
             elif days_since_optimal == plant['watering_interval_days'] -1:
@@ -144,25 +129,25 @@ def evaluate_calendar(cal, plant):
 
     return calendar
 
-def is_optimal_day_thingy(average_temperature, average_humidity):
-    if is_sunny_day(average_temperature):
-        if is_humid_day(average_humidity):
+def is_optimal_day_thingy(average_temperature, average_humidity, optimal_temperature, optimal_humidity):
+    if is_sunny_day(average_temperature, optimal_temperature):
+        if is_humid_day(average_humidity, optimal_humidity):
             return True
     return False
 
-def is_optimal_day_weather(average_temperature, average_humidity):
-    if is_sunny_day(average_temperature):
+def is_optimal_day_weather(average_temperature, average_humidity, optimal_temperature):
+    if is_sunny_day(average_temperature, optimal_temperature):
         if is_rainy_day(average_humidity):
             return True
     return False
 
-def is_sunny_day(average_temperature):
+def is_sunny_day(average_temperature, optimal_temperature):
     print("AVERAGE TEMPERATURE : " + str(average_temperature))
     if average_temperature >= optimal_temperature-accepted_tolerance_temperature and average_temperature <= optimal_temperature + accepted_tolerance_temperature:
         return True
     return False
 
-def is_humid_day(average_humidity):
+def is_humid_day(average_humidity, optimal_humidity):
     print("AVERAGE HUMIDITY : " + str(average_humidity))
     if average_humidity >= optimal_humidity - accepted_tolerance_humidity and average_humidity <= optimal_humidity + accepted_tolerance_humidity:
         return True
@@ -181,7 +166,7 @@ def days_between(d1,d2):
 async def main():
     await mysql.init_db()
     await influx.init_db()
-    calendar = await predict(3,1)
+    calendar = await predict(1,1)
     print(calendar)
 
 if __name__ == "__main__":
