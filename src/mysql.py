@@ -31,8 +31,10 @@ def insert_plant(name, nb_sunny_days, nb_rainy_days, watering_interval_days, thi
                 thing_id,
             ),
         )
+        id = cursor.lastrowid
         connection.commit()
         cursor.close()
+        return id
 
 
 def update_plant(
@@ -137,8 +139,11 @@ def insert_thing(mac_address, location):
     with connection.cursor() as cursor:
         sql = "INSERT INTO `things` (mac_address, location) VALUES(%s, %s)"
         cursor.execute(sql, (mac_address, location))
+        id = cursor.lastrowid
         connection.commit()
         cursor.close()
+        return id
+        
 
 
 def select_things():
