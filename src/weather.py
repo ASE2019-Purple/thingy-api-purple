@@ -20,7 +20,7 @@ async def get_weather_for_5_days(location):
     list_forecast = []
     for weather in _forecast.get_weathers():
         obj = {
-            "reference_time": weather.get_reference_time(timeformat="iso"),
+            "reference_time": weather.get_reference_time(timeformat="iso").split(' ')[0],
             "cloud_coverage": weather.get_clouds(),
             "rain_volume": weather.get_rain(),
             "snow_volume": weather.get_snow(),

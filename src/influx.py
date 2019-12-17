@@ -116,5 +116,8 @@ def get_list_continuous_query():
 
 def get_thingy_average_characteristic(thingy, characteristic, date):
     query = 'SELECT MEAN(*) FROM "'+characteristic+'" WHERE thingy=\''+thingy+'\' AND time >= \''+date+'T00:00:00Z\' AND time <= \''+date+'T23:59:59Z\''
-    return client.query(query)
+    rs = client.query(query)
+    for x in rs.get_points():
+        return x['mean_value']
+
 
