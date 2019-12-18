@@ -154,6 +154,21 @@ def get_filter_data(thingy_mac, characteristic_name, params):
     date = None
     startHour = None
     endHour = None
+
+    start_date = params.get("start_date")
+    end_date = params.get("end_date")
+
+    if start_date:
+        validate_date(start_date)
+        if end_date:
+            validate_date(end_date)
+        else:
+            end_date = datetime.today().strftime("%Y-%m-%d")
+
+        return influx.get_characteristic_by_date_range(
+            characteristic_name, start_date, end_date, thingy_mac
+        )
+
     try:
         date = params["date"]
         validate_date(date)
@@ -168,13 +183,11 @@ def get_filter_data(thingy_mac, characteristic_name, params):
 
     # Get data from influx db
     if filterByHours:
-        return list(
-            influx.get_characteristic_by_hours(
-                characteristic_name, date, startHour, endHour, thingy_mac
-            )
+        return influx.get_characteristic_by_hours(
+            characteristic_name, date, startHour, endHour, thingy_mac
         )
 
-    return list(influx.get_characteristic_by_day(characteristic_name, date, thingy_mac))
+    return influx.get_characteristic_by_day(characteristic_name, date, thingy_mac)
 
 
 def validate_date(date):
