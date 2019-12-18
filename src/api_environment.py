@@ -5,10 +5,11 @@ from aiohttp.web import run_app
 from aiohttp import web
 import aiohttp_cors
 import datetime
-
+import prediction
 
 # PLANTS API METHODS
 # ------------------------------------------------------------------------------
+
 
 def get_plants(request):
     result = mysql.select_plants()
@@ -24,17 +25,21 @@ def get_plant(request):
 
 async def post_plant(request):
     data = await request.json()
-    try: plant_id = mysql.insert_plant(data)
-    except KeyError: return web.json_response(status=400)
+    try:
+        plant_id = mysql.insert_plant(data)
+    except KeyError:
+        return web.json_response(status=400)
     return web.json_response(mysql.select_plant_by_id(plant_id), status=201)
 
 
 async def put_plant(request):
     data = await request.json()
-    data['plant_id'] = request.match_info["id"]
-    try: mysql.update_plant_by_id(data)
-    except KeyError: return web.json_response(status=400)
-    return web.json_response(mysql.select_plant_by_id(data['plant_id']), status=200)
+    data["plant_id"] = request.match_info["id"]
+    try:
+        mysql.update_plant_by_id(data)
+    except KeyError:
+        return web.json_response(status=400)
+    return web.json_response(mysql.select_plant_by_id(data["plant_id"]), status=200)
 
 
 def delete_plant(request):
@@ -43,8 +48,16 @@ def delete_plant(request):
     return web.json_response(status=404)
 
 
+async def get_plant_prediction(request):
+    result = await prediction.predict(request.match_info["id"])
+    if not result:
+        return web.json_response(status=404)
+    return web.json_response(result, status=200)
+
+
 # THINGY API METHODS
 # ------------------------------------------------------------------------------
+
 
 def get_things(request):
     result = mysql.select_things()
@@ -61,8 +74,10 @@ def get_thing(request):
 
 async def post_thing(request):
     data = await request.json()
-    try: thing_id = mysql.insert_thing(data)
-    except KeyError: return web.json_response(status=400)
+    try:
+        thing_id = mysql.insert_thing(data)
+    except KeyError:
+        return web.json_response(status=400)
     return web.json_response(mysql.select_thing_by_id(thing_id), status=201)
 
 
@@ -197,6 +212,11 @@ async def app_factory(args=()):
     cors.add(plant_resource.add_route("GET", get_plant))
     cors.add(plant_resource.add_route("PUT", put_plant))
     cors.add(plant_resource.add_route("DELETE", delete_plant))
+
+    prediction_resource = cors.add(
+        app.router.add_resource("/plant/{id:\\d+}/prediction", name="plant_prediction")
+    )
+    cors.add(prediction_resource.add_route("GET", get_plant_prediction))
 
     things_resource = cors.add(app.router.add_resource("/things", name="things"))
     cors.add(things_resource.add_route("GET", get_things))
