@@ -9,6 +9,7 @@ import datetime
 
 # PLANTS API METHODS
 # ------------------------------------------------------------------------------
+
 def get_plants(request):
     result = mysql.select_plants()
     return web.json_response(result, status=200)
@@ -17,46 +18,34 @@ def get_plants(request):
 def get_plant(request):
     result = mysql.select_plant_by_id(request.match_info["id"])
     if result == None:
-        return web.json_response("Plant not found", status=404)
+        return web.json_response(status=404)
     return web.json_response(result, status=200)
 
 
-def delete_plant(request):
-    result = mysql.select_plant_by_id(request.match_info["id"])
-    if result:
-        mysql.delete_plant_by_id(request.match_info["id"])
-        return web.json_response("Plant successfully deleted", status=200)
-    else:
-        return web.json_response("Plant not found ", status=404)
-
-
-async def post_plants(request):
+async def post_plant(request):
     data = await request.json()
-    plant = mysql.insert_plant(
-        data["name"],
-        data["nb_sunny_days"],
-        data["nb_rainy_days"],
-        data["watering_interval_days"],
-        data["thing_id"],
-    )
-    return web.json_response(plant, status=201)
+    try: plant_id = mysql.insert_plant(data)
+    except KeyError: return web.json_response(status=400)
+    return web.json_response(mysql.select_plant_by_id(plant_id), status=201)
 
 
 async def put_plant(request):
     data = await request.json()
-    plant = mysql.update_plant(
-        request.match_info["id"],
-        data["name"],
-        data["nb_sunny_days"],
-        data["nb_rainy_days"],
-        data["watering_interval_days"],
-        data["thing_id"],
-    )
-    return web.json_response(plant, status=201)
+    data['plant_id'] = request.match_info["id"]
+    try: mysql.update_plant_by_id(data)
+    except KeyError: return web.json_response(status=400)
+    return web.json_response(mysql.select_plant_by_id(data['plant_id']), status=200)
+
+
+def delete_plant(request):
+    if mysql.delete_plant_by_id(request.match_info["id"]):
+        return web.json_response(status=204)
+    return web.json_response(status=404)
 
 
 # THINGY API METHODS
 # ------------------------------------------------------------------------------
+
 def get_things(request):
     result = mysql.select_things()
     return web.json_response(result, status=200)
@@ -65,8 +54,22 @@ def get_things(request):
 def get_thing(request):
     result = mysql.select_thing_by_id(request.match_info["id"])
     if result == None:
-        return web.json_response("Thing not found", status=404)
+        return web.json_response(status=404)
+    result["properties"] = mysql.select_properties()
     return web.json_response(result, status=200)
+
+
+async def post_thing(request):
+    data = await request.json()
+    try: thing_id = mysql.insert_thing(data)
+    except KeyError: return web.json_response(status=400)
+    return web.json_response(mysql.select_thing_by_id(thing_id), status=201)
+
+
+def delete_thing(request):
+    if mysql.delete_thing_by_id(request.match_info["id"]):
+        return web.json_response(status=204)
+    return web.json_response(status=404)
 
 
 def get_thing_properties(request):
@@ -189,16 +192,19 @@ async def app_factory(args=()):
     # Resources
     plants_resource = cors.add(app.router.add_resource("/plants", name="plants"))
     cors.add(plants_resource.add_route("GET", get_plants))
-    cors.add(plants_resource.add_route("POST", post_plants))
+    cors.add(plants_resource.add_route("POST", post_plant))
     plant_resource = cors.add(app.router.add_resource("/plant/{id:\\d+}", name="plant"))
     cors.add(plant_resource.add_route("GET", get_plant))
-    cors.add(plant_resource.add_route("DELETE", delete_plant))
     cors.add(plant_resource.add_route("PUT", put_plant))
+    cors.add(plant_resource.add_route("DELETE", delete_plant))
 
     things_resource = cors.add(app.router.add_resource("/things", name="things"))
     cors.add(things_resource.add_route("GET", get_things))
+    cors.add(things_resource.add_route("POST", post_thing))
     thing_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}", name="thing"))
     cors.add(thing_resource.add_route("GET", get_thing))
+    cors.add(thing_resource.add_route("DELETE", delete_thing))
+
     thing_properties_resource = cors.add(
         app.router.add_resource("/thing/{id:\\d+}/properties", name="thing_properties")
     )

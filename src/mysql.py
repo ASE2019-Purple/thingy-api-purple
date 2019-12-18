@@ -16,49 +16,6 @@ async def init_db():
     )
 
 
-def insert_plant(name, optimal_temperature, optimal_humidity, watering_interval_days, thing_id):
-    start_date = datetime.now().strftime("%Y-%m-%d")
-    with connection.cursor() as cursor:
-        sql = "INSERT INTO `plants` (name, optimal_temperature, optimal_humidity, watering_interval_days, start_date, thing_id) VALUES(%s,%s,%s,%s,%s,%s)"
-        cursor.execute(
-            sql,
-            (
-                name,
-                optimal_temperature,
-                optimal_humidity,
-                watering_interval_days,
-                start_date,
-                thing_id,
-            ),
-        )
-        id = cursor.lastrowid
-        connection.commit()
-        cursor.close()
-        return id
-
-
-def update_plant(
-    plant_id, name, optimal_temperature, optimal_humidity, watering_interval_days, thing_id
-):
-    start_date = datetime.now().strftime("%Y-%m-%d")
-    with connection.cursor() as cursor:
-        sql = "UPDATE `plants` SET name=%s, optimal_temperature=%s, optimal_humidity=%s, watering_interval_days=%s, start_date=%s, thing_id=%s WHERE id=%s"
-        cursor.execute(
-            sql,
-            (
-                name,
-                optimal_temperature,
-                optimal_humidity,
-                watering_interval_days,
-                start_date,
-                thing_id,
-                plant_id,
-            ),
-        )
-        connection.commit()
-        cursor.close()
-
-
 def select_plants():
     result = None
     with connection.cursor() as cursor:
@@ -109,42 +66,60 @@ def select_plant_by_id(id):
     return obj
 
 
-def delete_plant_by_id(id):
-    result = None
+def insert_plant(plant):
+    start_date = datetime.now().strftime("%Y-%m-%d")
     with connection.cursor() as cursor:
-        sql = "SELECT `*` FROM plants WHERE id=%s"
-        cursor.execute(sql, (id))
-        deletedplant = cursor.fetchone()
-        sql = "DELETE FROM plants WHERE id=%s"
-        cursor.execute(sql, (id))
-        result = cursor.fetchone()
-        connection.commit()
-        cursor.close()
-    if deletedplant:
-        obj = {
-            "id": deletedplant[0],
-            "name": deletedplant[1],
-            "optimal_temperature": deletedplant[2],
-            "optimal_humidity": deletedplant[3],
-            "watering_interval_days": deletedplant[4],
-            "start_date": deletedplant[5].strftime("%Y-%m-%d"),
-            "thing_id": deletedplant[6],
-        }
-        return obj
-    else:
-        return None
-
-
-def insert_thing(mac_address, location):
-    with connection.cursor() as cursor:
-        sql = "INSERT INTO `things` (mac_address, location) VALUES(%s, %s)"
-        cursor.execute(sql, (mac_address, location))
+        sql = "INSERT INTO `plants` (name, optimal_temperature, optimal_humidity, watering_interval_days, start_date, thing_id) VALUES(%s,%s,%s,%s,%s,%s)"
+        cursor.execute(
+            sql,
+            (
+                plant['name'],
+                plant['optimal_temperature'],
+                plant['optimal_humidity'],
+                plant['watering_interval_days'],
+                start_date,
+                plant['thing_id']
+            ),
+        )
         id = cursor.lastrowid
         connection.commit()
         cursor.close()
         return id
-        
 
+
+def update_plant_by_id(plant):
+    start_date = datetime.now().strftime("%Y-%m-%d")
+    with connection.cursor() as cursor:
+        sql = "UPDATE `plants` SET name=%s, optimal_temperature=%s, optimal_humidity=%s, watering_interval_days=%s, start_date=%s, thing_id=%s WHERE id=%s"
+        cursor.execute(
+            sql,
+            (
+                plant['name'],
+                plant['optimal_temperature'],
+                plant['optimal_humidity'],
+                plant['watering_interval_days'],
+                start_date,
+                plant['thing_id'],
+                plant['plant_id']
+            ),
+        )
+        id = cursor.lastrowid
+        connection.commit()
+        cursor.close()
+        return id
+
+
+def delete_plant_by_id(id):
+    result = None
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM plants WHERE id=%s"
+        affectedRows = cursor.execute(sql, (id))
+        succes = affectedRows == 1
+        if succes: connection.commit()
+        else: connection.fallback()
+        cursor.close()
+        return succes
+     
 
 def select_things():
     result = None
@@ -178,6 +153,27 @@ def select_thing_by_id(id):
 
     obj = {"id": result[0], "mac_address": result[1], "location": result[2]}
     return obj
+    
+
+def insert_thing(thing):
+    with connection.cursor() as cursor:
+        sql = "INSERT INTO `things` (mac_address, location) VALUES(%s, %s)"
+        cursor.execute(sql, (thing['mac_address'], thing['location']))
+        id = cursor.lastrowid
+        connection.commit()
+        cursor.close()
+        return id
+
+
+def delete_thing_by_id(id):
+    with connection.cursor() as cursor:
+        sql = "DELETE FROM things WHERE id=%s"
+        affectedRows = cursor.execute(sql, (id))
+        succes = affectedRows == 1
+        if succes: connection.commit()
+        else: connection.rollback()
+        cursor.close()
+        return succes
 
 
 def select_properties():
