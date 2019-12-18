@@ -220,6 +220,7 @@ async def app_factory(args=()):
     # init the db
     await influx.init_db()
     await mysql.init_db()
+    await notification.init_twilio()
 
     # Create web app
     app = web.Application()

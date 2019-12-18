@@ -5,13 +5,19 @@ import os
 connection = None
 
 
+MYSQL_HOSTNAME = os.getenv("MYSQL_HOSTNAME")
+MYSQL_PORT = os.getenv("MYSQL_PORT")
+MYSQL_USER = os.getenv("MYSQL_USER")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")
+MYSQL_DB = os.getenv("MYSQL_DB")
+
 async def init_db():
     global connection
     connection = pymysql.connect(
-        host="35.205.33.242",
-        user="purple",
-        password="purple",
-        db="purple",
+        host=MYSQL_HOSTNAME,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        db=MYSQL_DB,
         charset="utf8mb4",
     )
 

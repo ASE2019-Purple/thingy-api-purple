@@ -1,14 +1,19 @@
 import logging
 import asyncio
 import time
+import os
 
 from influx import insert_bulk, insert_environment_data
 from hbmqtt.client import MQTTClient, ClientException
 from hbmqtt.mqtt.constants import QOS_1, \
     QOS_2  # QOS_1 means from publishing client to broker, QOS_2 from broker to subscribing client
 
-uri = 'mqtt://purple:bfe6d5288f@mqtt.thing.zone:1897'
+MQTT_HOST=os.getenv("MQTT_HOST")
+MQTT_PORT=os.getenv("MQTT_PORT")
+MQTT_USERNAME=os.getenv("MQTT_USERNAME")
+MQTT_PASSWORD=os.getenv("MQTT_PASSWORD")
 
+uri = 'mqtt://' + MQTT_USERNAME + ':' + MQTT_PASSWORD + '@' +MQTT_HOST
 client = None
 
 thingys = {

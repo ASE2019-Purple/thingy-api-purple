@@ -1,9 +1,15 @@
 # Download the helper library from https://www.twilio.com/docs/python/install
 from twilio.rest import Client
+import os
 
-account_sid = 'AC8adb6f3b3b9d5cab186fb158f6954482'
-auth_token = '970f2844b96f50945e4ae377c8ed13cf'
-client = Client(account_sid, auth_token)
+TWILIO_ACCOUNT_SID=os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN=os.getenv("TWILIO_AUTH_TOKEN")
+
+client = None
+
+async def init_twilio():
+    global client
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 def send_message(content, recipient):
     message = client.messages \
