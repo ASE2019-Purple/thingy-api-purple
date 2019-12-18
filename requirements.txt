@@ -17,3 +17,4 @@ python-dotenv
 pyowm
 pymysql
 twilio
+aiohttp_swagger

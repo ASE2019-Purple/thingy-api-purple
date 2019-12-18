@@ -7,6 +7,7 @@ import aiohttp_cors
 import datetime
 import prediction
 import notification
+from aiohttp_swagger import setup_swagger
 
 # PLANTS API METHODS
 # ------------------------------------------------------------------------------
@@ -270,6 +271,8 @@ async def app_factory(args=()):
     # cors.add(thing_events_resource.add_route("GET", get_thing_events))
     # thing_event_resource = cors.add(app.router.add_resource("/thing/{id:\d+}/event/{type}", name='thing_event'))
     # cors.add(thing_event_resource.add_route("GET", get_thing_event))
+
+    setup_swagger(app, swagger_url="/api/v3/doc", swagger_from_file="..\swagger.yaml")
 
     return app
 
