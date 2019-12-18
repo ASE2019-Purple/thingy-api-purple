@@ -6,6 +6,7 @@ from aiohttp import web
 import aiohttp_cors
 import datetime
 import prediction
+import notification
 
 # PLANTS API METHODS
 # ------------------------------------------------------------------------------
@@ -49,9 +50,17 @@ def delete_plant(request):
 
 
 async def get_plant_prediction(request):
-    result = await prediction.predict(request.match_info["id"])
+    # Get the plant from the db
+    plant = mysql.select_plant_by_id(request.match_info["id"])
+
+    # Get thingy info
+    thingy = mysql.select_thing_by_id(plant.get("thing_id"))
+
+    result = await prediction.predict(plant, thingy)
     if not result:
         return web.json_response(status=404)
+
+    # send_notification(result, plant['name'], thingy['location'])
     return web.json_response(result, status=200)
 
 
@@ -182,6 +191,14 @@ def validate_date(date):
         datetime.datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         raise ValueError("Incorrect date format, should be YYYY-MM-DD")
+
+def send_notification(calendar, plant_name, location):
+    message = "Hello,\n\nHere are your next watering days for the plant " + plant_name + " in " + location + "\n\n"
+    for x in calendar:
+        if x['watering'] == True:
+            message += x['date'] + "\n"
+
+    notification.send_message(message, '+41792490274')
 
 
 # App Factory
