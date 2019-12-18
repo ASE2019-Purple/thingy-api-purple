@@ -16,3 +16,4 @@ influxdb
 python-dotenv
 pyowm
 pymysql
+twilio

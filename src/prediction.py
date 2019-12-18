@@ -9,12 +9,7 @@ accepted_tolerance_temperature = 3
 accepted_tolerance_humidity = 20
 
 
-async def predict(plant_id):
-    # Get the plant from the db
-    plant = mysql.select_plant_by_id(plant_id)
-
-    # Get thingy info
-    thingy = mysql.select_thing_by_id(plant.get("thing_id"))
+async def predict(plant, thingy):
 
     # Get the weather predictions based on the thingy location
     weather_prediction = await weather.get_weather_for_5_days(thingy["location"])
@@ -202,14 +197,3 @@ def days_between(d1, d2):
     d1 = datetime.strptime(d1, "%Y-%m-%d")
     d2 = datetime.strptime(d2, "%Y-%m-%d")
     return abs((d2 - d1).days)
-
-
-async def main():
-    await mysql.init_db()
-    await influx.init_db()
-    calendar = await predict(1, 1)
-    print(calendar)
-
-
-if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
