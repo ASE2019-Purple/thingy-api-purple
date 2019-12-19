@@ -9,7 +9,7 @@ client = None
 
 async def init_twilio():
     global client
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+    #client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 def send_message(content, recipient):
     message = client.messages \
