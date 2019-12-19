@@ -14,18 +14,10 @@ MYSQL_DB = os.getenv("MYSQL_DB")
 async def init_db():
     global connection
     connection = pymysql.connect(
-<<<<<<< HEAD
         host=MYSQL_HOSTNAME,
         user=MYSQL_USER,
         password=MYSQL_PASSWORD,
         db=MYSQL_DB
-=======
-        host="35.205.33.242",
-        user="purple",
-        password="purple",
-        db="purple",
-        charset="utf8mb4",
->>>>>>> 40dbe082e20c6761d23d690f575520b25b2c0c25
     )
 
 
