@@ -200,15 +200,11 @@ def validate_date(date):
 
 def send_notification(calendar, plant_name, location):
     message = "Hello,\n\nHere are your next watering days for the plant " + plant_name + " in " + location + "\n\n"
-    cpt = 0
-    date = None
     for x in calendar:
-        if cpt == 0 :
-            date = x['date']
-            cpt += 1
         if x['watering'] == True:
             message += x['date'] + "\n"
 
+    date = datetime.datetime.today().strftime('%Y-%m-%d').split(" ")
     notification.send_message(message, '+41792490274', date)
 
 
