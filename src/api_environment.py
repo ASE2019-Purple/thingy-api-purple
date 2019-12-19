@@ -256,7 +256,7 @@ async def app_factory(args=()):
     thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}/property/{name}", name="thing_property"))
     cors.add(thing_property_resource.add_route("GET", get_thing_property))
 
-    setup_swagger(app, swagger_url="/api/v3/doc", swagger_from_file="..\swagger.yaml")
+    setup_swagger(app, swagger_url="/api/v1/doc", swagger_from_file="..\swagger.yaml")
 
     return app
 
