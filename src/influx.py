@@ -17,7 +17,6 @@ INFLUXDB_DB = os.getenv("INFLUXDB_DB")
 async def init_db():
     global client
     client = InfluxDBClient(INFLUXDB_HOSTNAME,INFLUXDB_PORT,INFLUXDB_DB,INFLUXDB_USER,INFLUXDB_PASSWORD)
-    # client = InfluxDBClient("35.241.155.14", "8086", "purple", "purple", "purple")
     create_database()
 
 

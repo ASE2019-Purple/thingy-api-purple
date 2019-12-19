@@ -17,8 +17,7 @@ async def init_db():
         host=MYSQL_HOSTNAME,
         user=MYSQL_USER,
         password=MYSQL_PASSWORD,
-        db=MYSQL_DB,
-        charset="utf8mb4",
+        db=MYSQL_DB
     )
 
 
