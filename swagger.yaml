@@ -1,75 +1,245 @@
-paths:
-  /public:
-    get:
-      summary: Public Content
-      operationId: public
-      responses:
-        '200':
-          description: Success
-  /protected:
-    get:
-      summary: Protected content
-      operationId: protected
-      responses:
-        '200':
-          schema:
-            type: json
-          description: Success
-        '401':
-          description: Authorization required
-        '403':
-          description: Insufficient scopes
-  /profile:
-    get:
-      summary: Returns the name and email auf the authenticated user
-      operationId: get_profile
-      responses:
-        '200':
-          schema:
-            $ref: '#/definitions/Profile'
-          description: Profile
-        '401':
-          description: Authorization required
-        '403':
-          description: Insufficient scopes
-      parameters:
-        - in: header
-          format: Bearer
-          description: json web token
-          type: string
-          name: Authorization
-
-definitions:
-  Profile:
-    properties:
-      name:
-        type: string
-        description: Name
-      email:
-        type: string
-        description: Email
-    type: object
-    required:
-      - email
-
-basePath: /
-consumes:
-  - application/json
-produces:
-  - application/json
+openapi: 3.0.0
 info:
-  version: '1.0'
-  title: Thingy API Purple
-  description: ASE2019
-responses:
-  ParseError:
-    description: When a mask can't be parsed
-  MaskError:
-    description: When any error occurs on mask
-swagger: '2.0'
-tags:
-  - description: Default namespace
-    name: default
-  - description: Thingy
-    name: thingy
+  title: Thingy Purple Api
+  version: '3.0'
+servers:
+  - url: 'http://http://35.233.66.177:8081'
+paths:
+  /things:
+    get:
+      summary: Return existing thingys
+      tags:
+        - Thingys
+      operationId: getThingys
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/things'
+        '404':
+          description: Thingys not found
+    post:
+      summary: Add a new thingy
+      tags:
+        - Thingys
+      requestBody:
+        description: New thingy that should be added to the list of devices
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/things'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
 
+  '/thing/{id}':
+    get:
+      summary: Get one thingy
+      tags:
+        - Thingys
+      parameters:
+        - name: id
+          in: path
+          description: Get only one thingy
+          example: 1
+          required: true
+          schema:
+            type: integer
+            example: 3600
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/thing'
+        '400':
+          description: Invalid input
+  '/thing/{id}/properties':
+    get:
+      summary: Get all properties
+      tags:
+        - Thingys
+      parameters:
+        - name: id
+          in: path
+          description: Get all properties
+          example: 1
+          required: true
+          schema:
+            type: integer
+            example: 3600
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/thing'
+        '404':
+          description: Thingy property not found
+  '/thing/{id}/property/{name}':
+    get:
+      summary: Get one property
+      tags:
+        - Thingys
+      parameters:
+        - name: id
+          in: path
+          description: Get specific thingy charachteristic
+          example: 1
+          required: true
+          schema:
+            type: integer
+            example: 3600
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "temperature"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/thing'
+        '404':
+          description: Thingy service not found
+  /plants:
+    get:
+      summary: Return existing plants
+      tags:
+        - Plants
+      operationId: getPlants
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plants'
+        '404':
+          description: Plants not found
+    post:
+      summary: Add a new plant
+      tags:
+        - Plants
+      requestBody:
+        description: New plant that should be added to the list of plants
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/plants'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+  '/plant/{id}':
+    get:
+      summary: Get one plant
+      tags:
+        - Plants
+      parameters:
+        - name: id
+          in: path
+          description: Get only one plant
+          example: 1
+          required: true
+          schema:
+            type: integer
+            example: 3600
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plants'
+        '404':
+          description: Invalid input
+  '/plant/{id}/prediction':
+    get:
+      summary: Get one plant's watering prediction
+      tags:
+        - Plants
+      parameters:
+        - name: id
+          in: path
+          description: Get one plant's watering prediction
+          example: 1
+          required: true
+          schema:
+            type: integer
+            example: 3600
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/plants'
+        '404':
+          description: Plant not found
+components:
+  schemas:
+    things:
+      type: object
+      properties:
+        id:
+          type: integer
+        mac_address:
+          type: string
+        location:
+          type: string
+    thing:
+      type: object
+      properties:
+        id:
+          type: "number"
+        mac_address:
+          type: "string"
+        location:
+          type: "string"
+        properties:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              id:
+                type: "number"
+              name:
+                type: "string"
+              characteristic:
+                type: "string"
+              type:
+                type: "string"
+              unit:
+                type: "string"
+              readOnly:
+                type: "number"
+    plants:
+      type: object
+      properties:
+          id:
+            type: "number"
+          name:
+            type: "string"
+          optimal_temperature:
+            type: "number"
+          optimal_humidity:
+            type: "number"
+          watering_interval_days:
+            type: "number"
+          start_date:
+            type: "string"
+          thing_id:
+            type: "number"

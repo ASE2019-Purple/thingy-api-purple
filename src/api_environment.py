@@ -7,7 +7,7 @@ import aiohttp_cors
 import datetime
 import prediction
 import notification
-from aiohttp_swagger import setup_swagger
+# from aiohttp_swagger import setup_swagger
 
 # PLANTS API METHODS
 # ------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ async def get_plant_prediction(request):
     if not result:
         return web.json_response(status=404)
 
-    # send_notification(result, plant['name'], thingy['location'])
+    send_notification(result, plant['name'], thingy['location'])
     return web.json_response(result, status=200)
 
 
@@ -200,11 +200,16 @@ def validate_date(date):
 
 def send_notification(calendar, plant_name, location):
     message = "Hello,\n\nHere are your next watering days for the plant " + plant_name + " in " + location + "\n\n"
+    cpt = 0
+    date = None
     for x in calendar:
+        if cpt == 0 :
+            date = x['date']
+            cpt += 1
         if x['watering'] == True:
             message += x['date'] + "\n"
 
-    notification.send_message(message, '+41792490274')
+    notification.send_message(message, '+41792490274', date)
 
 
 # App Factory
@@ -256,7 +261,7 @@ async def app_factory(args=()):
     thing_property_resource = cors.add(app.router.add_resource("/thing/{id:\\d+}/property/{name}", name="thing_property"))
     cors.add(thing_property_resource.add_route("GET", get_thing_property))
 
-    setup_swagger(app, swagger_url="/api/v1/doc", swagger_from_file="..\swagger.yaml")
+    # setup_swagger(app, swagger_url="/api/v1/doc", swagger_from_file="..\swagger.yaml")
 
     return app
 

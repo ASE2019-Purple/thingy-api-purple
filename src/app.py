@@ -11,7 +11,7 @@ import os
 
 env = os.getenv("ENVIRONMENT", "DEBUG")
 IP = os.getenv("IP", "0.0.0.0")
-PORT = os.getenv("PORT", "8000")
+PORT = os.getenv("PORT", "8081")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

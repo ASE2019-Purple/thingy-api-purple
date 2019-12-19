@@ -13,7 +13,6 @@ MQTT_PORT=os.getenv("MQTT_PORT")
 MQTT_USERNAME=os.getenv("MQTT_USERNAME")
 MQTT_PASSWORD=os.getenv("MQTT_PASSWORD")
 
-uri = 'mqtt://' + MQTT_USERNAME + ':' + MQTT_PASSWORD + '@' +MQTT_HOST
 client = None
 
 thingys = {
@@ -33,7 +32,14 @@ topics = {
 async def init_mqtt():
     global client
     client = MQTTClient()
+    uri = 'mqtt://' + MQTT_USERNAME + ':' + MQTT_PASSWORD + '@' +MQTT_HOST + ':' + MQTT_PORT
     await client.connect(uri)
+
+async def init_local_mqtt():
+    global client
+    client = MQTTClient()
+    uri_local = 'mqtt://purple:bfe6d5288f@mqtt.thing.zone:1897'
+    await client.connect(uri_local)
 
 
 @asyncio.coroutine
